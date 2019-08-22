@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-This File runs on the host (H1) to collect buckets of data.
+This module helps in capturing buckets of data.
 """
 
 from threading import Thread, Lock
@@ -8,7 +8,12 @@ from datetime import datetime
 import time
 import logging
 import pyshark
+import json
+import requests
 
+"""
+Bucket class is the representation of a Data Bucket
+"""
 class Bucket():
     def __init__(self,starttime,endtime,bytes_):
         self._starttime=starttime
@@ -17,7 +22,8 @@ class Bucket():
 
 
 """
-Bucket capture class captures a bucket form a interface
+Bucket capture class runs threads to captures packets
+from given interface and form a bucket
 """
 class BucketCapture():
     """
@@ -44,7 +50,7 @@ class BucketCapture():
         
 
     """
-    Starts running the Capture
+    Starts running the Capture and Bucketization
     """
     def start(self):
         logging.info("capture thread is starting")
@@ -88,7 +94,10 @@ class BucketCapture():
                 if(len(self._buckets)==self._maxbuckets):
                     # Call the hooks (in other thread)
                     for hook in self._hooks:
-                        Thread(target=hook,args=(self._buckets[:]))
+                        try:
+                            Thread(target=hook,args=(self._buckets[:]))
+                        except:
+                            pass
                     
                     logging.debug(f"-----------")
                     logging.info(f"collected {self._maxbuckets} packets with {sum(map(lambda x:x._bytes, self._buckets))} bytes")
@@ -113,30 +122,36 @@ class BucketCapture():
         self._capture_thread = None
         self._current_bytes = 0
         
+    """
+    Let the main thread join the capture and bucketing threads
+    """
     def join(self):
         if(self._running==True):
             self._bucket_thread.join()
             self._capture_thread.join()
 
+    """
+    Change the interval of polling
+    """
     def interval(self,new_interval,maxbuckets):
         with self._interval_lock:
-            self._interval_lock.acquire()
             self._interval=new_interval
             self._maxbuckets=maxbuckets
-            self._interval_lock.release()
 
     """
-    Registers hooks to the event
+    Registers hooks to the maxbucket reached event
     """
     def register(self, hook):
         self._hooks.append(hook)
 
+
+"""
+Main to test out the module
+"""
 if __name__ == "__main__":
     format = "%(asctime)s: %(message)s: %(funcName)s"
     logging.basicConfig(format=format, level=logging.INFO,
                         datefmt="%H:%M:%S")
     capture = BucketCapture("enp0s3",0.1,20)
-    # capture.register(sendData)
     capture.start()
     capture.join()
-    
