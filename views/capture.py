@@ -95,7 +95,7 @@ class BucketCapture():
                     # Call the hooks (in other thread)
                     for hook in self._hooks:
                         try:
-                            Thread(target=hook,args=(self._buckets[:]))
+                            Thread(target=hook,args=([self._buckets[:]])).start()
                         except:
                             pass
                     
