@@ -108,7 +108,7 @@ class BucketCapture():
                             pass
                     
                     logging.debug(f"-----------")
-                    logging.info(f"collected {self._maxbuckets} packets with {sum(map(lambda x:x._bytes, self._buckets))} bytes")
+                    logging.debug(f"collected {self._maxbuckets} packets with {sum(map(lambda x:x._bytes, self._buckets))} bytes")
                     logging.debug(f"-----------")
                     self._buckets=[]
 
@@ -158,7 +158,7 @@ Main to test out the module
 """
 if __name__ == "__main__":
     format = "%(asctime)s: %(message)s: %(funcName)s"
-    logging.basicConfig(format=format, level=logging.INFO,
+    logging.basicConfig(format=format, level=logging.DEBUG,
                         datefmt="%H:%M:%S")
     capture = BucketCapture("enp0s3",0.1,20)
     capture.start()

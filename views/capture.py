@@ -53,7 +53,7 @@ class BucketCapture():
     Starts running the Capture and Bucketization
     """
     def start(self):
-        logging.info("capture thread is starting")
+        logging.debug("capture thread is starting")
         
         
         self._capture = pyshark.LiveCapture(interface=self._interface)
@@ -100,7 +100,7 @@ class BucketCapture():
                             pass
                     
                     logging.debug(f"-----------")
-                    logging.info(f"collected {self._maxbuckets} packets with {sum(map(lambda x:x._bytes, self._buckets))} bytes")
+                    logging.debug(f"collected {self._maxbuckets} packets with {sum(map(lambda x:x._bytes, self._buckets))} bytes")
                     logging.debug(f"-----------")
                     self._buckets=[]
 

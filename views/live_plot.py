@@ -42,7 +42,7 @@ class LivePlot(object):
                                                 blit=True)
             plt.show()
         
-        self.animation_thread = Thread(target=start_animation)
+        self.animation_thread = Thread(target=start_animation,args=[self])
     
     """
     Start the animation thread

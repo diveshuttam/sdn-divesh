@@ -2,7 +2,6 @@
 This module takes care of calculating frequency of the captured traffic
 """
 
-from capture import BucketCapture
 import logging
 
 """
@@ -35,7 +34,13 @@ class FrequencyCalculator():
         count = 0
         sum_change = 0
         for x in range(n-1):
-            change = abs((buckets[x]._bytes+1-buckets[x+1]._bytes+1)/(buckets[x]._bytes+1))
+            try:
+                change = abs((buckets[x]._bytes-buckets[x+1]._bytes)/(buckets[x]._bytes+1))
+            except ZeroDivisionError:
+                if(buckets[x]._bytes!=buckets[x+1]._bytes):
+                    change = self.curr_delta
+                else:
+                    change = 0
             sum_change += change
             if change>=self.curr_delta:
                 count+=1
@@ -45,6 +50,12 @@ class FrequencyCalculator():
         self.previous_frequency = self.current_frequency
         self.current_frequency = 2*count
         logging.info(f"curr freq: {self.current_frequency}")
+
+        for hook in self.hooks:
+            try:
+                Thread(target=hook,args=self.current_frequency).start()
+            except:
+                pass
         return 2*count
 
 
@@ -58,11 +69,16 @@ class FrequencyCalculator():
 Main to test out the module
 """
 if __name__ == "__main__":
-    format = "%(asctime)s: %(message)s: %(funcName)s"
-    logging.basicConfig(format=format, level=logging.INFO,
+    try:
+        from capture import BucketCapture
+        format = "%(asctime)s: %(message)s: %(funcName)s"
+        logging.basicConfig(format=format, level=logging.INFO,
                         datefmt="%H:%M:%S")
-    capture = BucketCapture("enp0s3",0.1,20)
-    fq = FrequencyCalculator()
-    capture.register(fq.calculate_frequency)
-    capture.start()
-    capture.join()
+        capture = BucketCapture("enp0s3",0.1,20)
+        fq = FrequencyCalculator()
+        capture.register(fq.calculate_frequency)
+        capture.start()
+        capture.join()
+    except KeyboardInterrupt:
+        import sys
+        sys.exit()
