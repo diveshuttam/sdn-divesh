@@ -3,7 +3,7 @@ This module takes care of calculating frequency of the captured traffic
 """
 
 import logging
-
+from threading import Thread
 """
 Class provides hooks to calculate frequency of current traffic
 """
@@ -49,13 +49,13 @@ class FrequencyCalculator():
         self.curr_delta = self.prev_delta*(1-self.alpha) + self.bucket_change_avg*self.alpha
         self.previous_frequency = self.current_frequency
         self.current_frequency = 2*count
-        logging.info(f"curr freq: {self.current_frequency}")
+        logging.debug(f"curr freq: {self.current_frequency}")
 
         for hook in self.hooks:
             try:
-                Thread(target=hook,args=self.current_frequency).start()
+                Thread(target=hook,args=([self.current_frequency])).start()
             except:
-                pass
+                raise
         return 2*count
 
 

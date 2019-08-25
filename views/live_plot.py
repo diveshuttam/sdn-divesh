@@ -10,6 +10,7 @@ import matplotlib.animation as animation
 from datetime import datetime
 from threading import Thread, Lock
 from collections import deque
+import logging
 
 
 """
@@ -82,7 +83,7 @@ class LivePlot(object):
     Add a point to the plotting bucket set
     """
     def nextpoint(self,x,y):
-        print(f"called nextpoint with {(x,y)}")
+        logging.debug(f"called nextpoint with {(x,y)}")
         with self.datalock:
             self.tdata.append(x)
             self.ydata.append(y)
@@ -97,13 +98,12 @@ main to test the program need to call with sudo as capture
 if __name__ == '__main__':
     plot = LivePlot(interval=1000,bucketrange=200)
     from capture import BucketCapture
-    import logging
     format = "%(asctime)s: %(message)s: %(funcName)s"
     logging.basicConfig(format=format, level=logging.INFO,
                         datefmt="%H:%M:%S")
     capture = BucketCapture("enp0s3",0.1,20)
     def update_hook(buckets):
-        print("called update hook")
+        logging.info("called update hook")
         for bucket in buckets:
             plot.nextpoint(bucket._starttime.timestamp(), bucket._bytes)
     capture.register(update_hook)
