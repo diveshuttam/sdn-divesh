@@ -49,7 +49,7 @@ class FrequencyCalculator():
         self.curr_delta = self.prev_delta*(1-self.alpha) + self.bucket_change_avg*self.alpha
         self.previous_frequency = self.current_frequency
         self.current_frequency = 2*count
-        logging.debug(f"curr freq: {self.current_frequency}")
+        logging.info(f"curr freq: {self.current_frequency}")
 
         for hook in self.hooks:
             try:

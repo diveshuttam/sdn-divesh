@@ -99,9 +99,7 @@ class BucketCapture():
                         except:
                             pass
                     
-                    logging.debug(f"-----------")
-                    logging.debug(f"collected {self._maxbuckets} packets with {sum(map(lambda x:x._bytes, self._buckets))} bytes")
-                    logging.debug(f"-----------")
+                    logging.info(f"collected {self._maxbuckets} packets {list(map(lambda x:x._bytes, self._buckets))}: with sum {sum(map(lambda x:x._bytes, self._buckets))} bytes")
                     self._buckets=[]
 
         self._bucket_thread = Thread(target=_bucket_function,name="Bucketing Thread")

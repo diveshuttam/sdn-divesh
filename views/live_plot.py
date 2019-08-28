@@ -41,15 +41,18 @@ class LivePlot(object):
         def start_animation(self):
             self.ani = animation.FuncAnimation(self.fig, self.refresh, interval=self.interval,
                                                 blit=True)
-            plt.show()
         
         self.animation_thread = Thread(target=start_animation,args=[self])
     
     """
     Start the animation thread
     """
-    def start(self):
+    def start(self,show=True):
         self.animation_thread.start()
+        if(show):
+            plt.show()
+        else:
+            pass
     
     """
     Join the animation thread
@@ -62,7 +65,7 @@ class LivePlot(object):
     Refresh the graph every interval
     """
     def refresh(self, y):
-        print(f"called update with {y}")
+        logging.debug(f"called update with {y}")
         self.ax.figure.canvas.draw()
         with self.datalock:
             tdata = self.tdata
