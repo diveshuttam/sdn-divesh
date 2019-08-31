@@ -2,22 +2,23 @@ from collections import deque
 import time
 from math import ceil, sqrt
 from threading import Thread
-class Cemon():
-    def __init__(self,initial_time,tmin,tmax,ws,stats_function):
+
+class CEMon():
+    def __init__(self,initial_interval,tmin,tmax,ws):
         self.window=deque()
         self.sum=0
         self.squaresum=0
         self.lastreading=0
-        self.time=initial_time
+        self.time=initial_interval
         self.tmin=tmin
         self.tmax=tmax
         self.mean=0
         self.stdev=0
         self.ws=ws
         self.thread=None
-        self.stats_function = stats_function
 
-    def next_time(self,bytes_):
+    def get_next_wait_time(self,bytes_=0):
+        return 10
         # check for abs later
         var = bytes_-self.lastreading
         if(var>self.mean+2*self.stdev):
@@ -42,13 +43,3 @@ class Cemon():
         # average of squaresum - (average of sum) ^ 2
         self.stdev=sqrt(self.squaresum/len(self.window)-self.mean*self.mean)
         return self.time
-
-    def start(self):
-        def run_fun():
-            b=self.stats_function()
-            time.sleep(self.next_time(b))
-        self.thread = Thread(target=run_fun)
-        self.thread.start()
-
-    def join(self):
-        self.thread.join()

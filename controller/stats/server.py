@@ -36,8 +36,6 @@ class Server():
                     self.conn.close()
                     logging.debug('closed existing connections, accepting new connections')
                     self.conn, self.addr = self.s.accept()
-                    
-                    
 
         self.thread = Thread(target=fun,args=(self,))
         self.thread.start()

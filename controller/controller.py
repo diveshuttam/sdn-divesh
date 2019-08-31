@@ -12,8 +12,10 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
     def __init__(self, *args, **kwargs):
         super(SimpleMonitor13, self).__init__(*args, **kwargs)
         self.datapaths = {}
+        self.cemon = CEMon.CEMon(0.5,0.5,1,20)
+        self.nqmon = NqMon.NqMon(0.5)
         self.cemon_thread = hub.spawn(self._cemon_monitor)
-        # self.our_thread = hub.spawn(self._our_monitor)
+        self.nqmon_thread = hub.spawn(self._nqmon_monitor)
 
     @set_ev_cls(ofp_event.EventOFPStateChange,
                 [MAIN_DISPATCHER, DEAD_DISPATCHER])
@@ -29,18 +31,18 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 del self.datapaths[datapath.id]
 
     def _cemon_monitor(self):
-        print(self.datapaths)
         while True:
-            print(self.datapaths)
             for dp in self.datapaths.values():
+                self.logger.debug("cemon")
                 self._request_stats(dp)
-            hub.sleep(10)
+            hub.sleep(self.cemon.get_next_wait_time())
 
-    def _our_monitor(self):
+    def _nqmon_monitor(self):
         while True:
             for dp in self.datapaths.values():
+                self.logger.debug("nqmon")
                 self._request_stats(dp)
-            hub.sleep(10)
+            hub.sleep(self.nqmon.get_next_wait_time())
 
 
     def _request_stats(self, datapath):
