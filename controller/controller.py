@@ -5,14 +5,15 @@ from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER, DEAD_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.lib import hub
+from stats import CEMon, NqMon
 
 
 class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
-
     def __init__(self, *args, **kwargs):
         super(SimpleMonitor13, self).__init__(*args, **kwargs)
         self.datapaths = {}
-        self.monitor_thread = hub.spawn(self._monitor)
+        self.cemon_thread = hub.spawn(self._cemon_monitor)
+        # self.our_thread = hub.spawn(self._our_monitor)
 
     @set_ev_cls(ofp_event.EventOFPStateChange,
                 [MAIN_DISPATCHER, DEAD_DISPATCHER])
@@ -27,11 +28,20 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 self.logger.debug('unregister datapath: %016x', datapath.id)
                 del self.datapaths[datapath.id]
 
-    def _monitor(self):
+    def _cemon_monitor(self):
+        print(self.datapaths)
+        while True:
+            print(self.datapaths)
+            for dp in self.datapaths.values():
+                self._request_stats(dp)
+            hub.sleep(10)
+
+    def _our_monitor(self):
         while True:
             for dp in self.datapaths.values():
                 self._request_stats(dp)
             hub.sleep(10)
+
 
     def _request_stats(self, datapath):
         self.logger.debug('send stats request: %016x', datapath.id)
