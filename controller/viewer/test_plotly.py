@@ -92,6 +92,8 @@ def update_graph_scatter(n):
         name='Actual',
         mode='lines+markers'
     )
+
+    print(trace1.y,trace2.y,trace3.y)
     return {'data': [trace1,trace2,trace3],
             'layout': go.Layout(
                 xaxis=dict(range=[max([min(X1),min(X2),min(X3)]), min([max(X1),max(X2),max(X3)])]),
