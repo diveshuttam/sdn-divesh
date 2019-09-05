@@ -9,7 +9,7 @@ from stats import CEMon, NqMon, Server
 from viewer import test_plotly
 from datetime import datetime
 from random import randint
-from threading import Thread
+from threading import Thread,Lock
 
 
 class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
@@ -17,6 +17,9 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         super(SimpleMonitor13, self).__init__(*args, **kwargs)
         self.logger.debug('called init')
         self.datapaths = {}
+        self.bytes_=0
+        self.bytes_lock = Lock()
+        self.actual_polling=5
         self.cemon = CEMon.CEMon(5,5.0)
         self.nqmon = NqMon.NqMon(5)
         self.nqmon_server = Server.Server('0.0.0.0',8080)
@@ -69,7 +72,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         while True:
             self.actual_bytes_=self._request_bytes()
             test_plotly.update3(datetime.now(),self.actual_bytes_)
-            time.sleep(0.1)
+            time.sleep(self.actual_polling)
  
     def _plotly_thread(self):
         test_plotly.app.run_server(debug=True)
@@ -83,11 +86,16 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         req = parser.OFPFlowStatsRequest(datapath)
         datapath.send_msg(req)
 
-        req = parser.OFPPortStatsRequest(datapath, 0, ofproto.OFPP_ANY)
-        datapath.send_msg(req)
+        # req = parser.OFPPortStatsRequest(datapath, 0, ofproto.OFPP_ANY)
+        # datapath.send_msg(req)
 
     def _request_bytes(self):
-        return randint(1,10)
+        for dp in self.datapaths.values():
+            self._request_stats(dp)
+        with self.bytes_lock:
+            bytes_=self.bytes_
+        print(f'returning {bytes_}')
+        return bytes_
 
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
@@ -99,6 +107,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         self.logger.info('---------------- '
                          '-------- ----------------- '
                          '-------- -------- --------')
+        bytes_=0
         for stat in sorted([flow for flow in body if flow.priority == 1],
                            key=lambda flow: (flow.match['in_port'],
                                              flow.match['eth_dst'])):
@@ -107,19 +116,23 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                              stat.match['in_port'], stat.match['eth_dst'],
                              stat.instructions[0].actions[0].port,
                              stat.packet_count, stat.byte_count)
+            bytes_=stat.byte_count
+        print(f'setting_bytes to {bytes_}')
+        with self.bytes_lock:
+            self.bytes_=bytes_
 
-    @set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
-    def _port_stats_reply_handler(self, ev):
-        body = ev.msg.body
+    # @set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
+    # def _port_stats_reply_handler(self, ev):
+    #     body = ev.msg.body
 
-        self.logger.info('datapath         port     '
-                         'rx-pkts  rx-bytes rx-error '
-                         'tx-pkts  tx-bytes tx-error')
-        self.logger.info('---------------- -------- '
-                         '-------- -------- -------- '
-                         '-------- -------- --------')
-        for stat in sorted(body, key=attrgetter('port_no')):
-            self.logger.info('%016x %8x %8d %8d %8d %8d %8d %8d',
-                             ev.msg.datapath.id, stat.port_no,
-                             stat.rx_packets, stat.rx_bytes, stat.rx_errors,
-                             stat.tx_packets, stat.tx_bytes, stat.tx_errors)
+    #     self.logger.info('datapath         port     '
+    #                      'rx-pkts  rx-bytes rx-error '
+    #                      'tx-pkts  tx-bytes tx-error')
+    #     self.logger.info('---------------- -------- '
+    #                      '-------- -------- -------- '
+    #                      '-------- -------- --------')
+    #     for stat in sorted(body, key=attrgetter('port_no')):
+    #         self.logger.info('%016x %8x %8d %8d %8d %8d %8d %8d',
+    #                          ev.msg.datapath.id, stat.port_no,
+    #                          stat.rx_packets, stat.rx_bytes, stat.rx_errors,
+    #                          stat.tx_packets, stat.tx_bytes, stat.tx_errors)
