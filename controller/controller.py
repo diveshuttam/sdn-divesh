@@ -1,22 +1,35 @@
 from operator import attrgetter
-
+import time
 from ryu.app import simple_switch_13
 from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER, DEAD_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.lib import hub
-from stats import CEMon, NqMon
+from stats import CEMon, NqMon, Server
+from viewer import test_plotly
+from datetime import datetime
+from random import randint
+from threading import Thread
 
 
 class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
     def __init__(self, *args, **kwargs):
         super(SimpleMonitor13, self).__init__(*args, **kwargs)
+        self.logger.debug('called init')
         self.datapaths = {}
-        self.cemon = CEMon.CEMon(0.5,0.5,1,20)
-        self.nqmon = NqMon.NqMon(0.5)
-        self.cemon_thread = hub.spawn(self._cemon_monitor)
-        self.nqmon_thread = hub.spawn(self._nqmon_monitor)
-
+        self.cemon = CEMon.CEMon(5,5.0)
+        self.nqmon = NqMon.NqMon(5)
+        self.nqmon_server = Server.Server('0.0.0.0',8080)
+        self.nqmon_server.register(self.nqmon.update_interval)
+        self.cemon_thread = Thread(target=self._cemon_monitor)
+        self.nqmon_thread = Thread(target=self._nqmon_monitor)
+        self.plotly_thread = Thread(target=self._plotly_thread)
+        self.actual_thread = Thread(target=self._actual_thread)
+        self.cemon_thread.start()
+        self.nqmon_thread.start()
+        self.plotly_thread.start()
+        self.actual_thread.start()
+        
     @set_ev_cls(ofp_event.EventOFPStateChange,
                 [MAIN_DISPATCHER, DEAD_DISPATCHER])
     def _state_change_handler(self, ev):
@@ -32,17 +45,34 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
 
     def _cemon_monitor(self):
         while True:
-            for dp in self.datapaths.values():
-                self.logger.debug("cemon")
-                self._request_stats(dp)
-            hub.sleep(self.cemon.get_next_wait_time())
+            self.logger.debug("cemon")
+            self.cemon_bytes_=self._request_bytes()
+            self.logger.debug(f'cemon bytes {self.cemon_bytes_}')
+            test_plotly.update1(datetime.now(),self.cemon_bytes_)
+            t=self.cemon.get_next_wait_time()
+            self.logger.debug(f'cemon going to sleep for {t}s')
+            time.sleep(t)
 
     def _nqmon_monitor(self):
+        self.logger.debug('waiting for nqmon collector connection')
+        self.nqmon_server.start()
         while True:
-            for dp in self.datapaths.values():
-                self.logger.debug("nqmon")
-                self._request_stats(dp)
-            hub.sleep(self.nqmon.get_next_wait_time())
+            self.logger.debug("nqmon")
+            self.nqmon_bytes_=self._request_bytes()
+            self.logger.debug(f'nqmon bytes {self.nqmon_bytes_}')
+            test_plotly.update2(datetime.now(),self.nqmon_bytes_)
+            t=self.nqmon.get_next_wait_time()
+            self.logger.debug(f'nqmon going to sleep for {t}s')
+            time.sleep(t)
+    
+    def _actual_thread(self):
+        while True:
+            self.actual_bytes_=self._request_bytes()
+            test_plotly.update3(datetime.now(),self.actual_bytes_)
+            time.sleep(0.1)
+ 
+    def _plotly_thread(self):
+        test_plotly.app.run_server(debug=True)
 
 
     def _request_stats(self, datapath):
@@ -55,6 +85,9 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
 
         req = parser.OFPPortStatsRequest(datapath, 0, ofproto.OFPP_ANY)
         datapath.send_msg(req)
+
+    def _request_bytes(self):
+        return randint(1,10)
 
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
@@ -90,4 +123,3 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                              ev.msg.datapath.id, stat.port_no,
                              stat.rx_packets, stat.rx_bytes, stat.rx_errors,
                              stat.tx_packets, stat.tx_bytes, stat.tx_errors)
-

@@ -1,1 +1,1 @@
-__all__ = ['collector', 'controller', 'views']
+__all__ = ['collector', 'controller']

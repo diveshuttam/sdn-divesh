@@ -11,8 +11,12 @@ from threading import Thread
 
 class Server():
     def __init__(self,HOST,PORT):
+        print('binding server')
         self.s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.bind((HOST, PORT))
+        try:
+            self.s.bind((HOST, PORT))
+        except:
+            pass
         self.hooks=[]
            
     def start(self):
