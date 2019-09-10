@@ -9,27 +9,27 @@ from datetime import datetime
 from threading import Lock
 from flask import Flask, request, abort
 
+maxtime=30
 server = Flask(__name__)
 lock1 = Lock()
 lock2 = Lock()
 lock3 = Lock()
-
 print('------------------------importing plotly----------------------------------------')
-X1 = deque(maxlen=20)
+X1 = deque()
 X1.append(0)
-Y1 = deque(maxlen=20)
+Y1 = deque()
 Y1.append(0)
 
-X2 = deque(maxlen=20)
+X2 = deque()
 X2.append(0)
-Y2 = deque(maxlen=20)
+Y2 = deque()
 Y2.append(0)
 
 
 
-X3 = deque(maxlen=30)
+X3 = deque()
 X3.append(0)
-Y3 = deque(maxlen=30)
+Y3 = deque()
 Y3.append(0)
 
 init1 = True
@@ -43,13 +43,13 @@ def update1():
     print(nicetext)
     if(nicetext['type']=='cemon'):
         X1.append(nicetext['time'])
-        Y1.append(nicetext['val'])
+        Y1.append(nicetext['val1'])
     elif(nicetext['type']=='nqmon'):
         X2.append(nicetext['time'])
-        Y2.append(nicetext['val'])
+        Y2.append(nicetext['val1'])
     elif(nicetext['type']=='actual'):
         X3.append(nicetext['time'])
-        Y3.append(nicetext['val'])
+        Y3.append(nicetext['val1'])
     return nicetext,201
 
 @server.route("/hello",methods=['GET'])
@@ -100,17 +100,15 @@ app.layout = html.Div(
 @app.callback(Output('live-graph', 'figure'),
               [Input('graph-update', 'n_intervals')])
 def update_graph_scatter(n):
-    if(X1[0]==0 and len(X1)>1):
+    while(abs(X1[0]-X1[-1])>maxtime):
         X1.popleft()
         Y1.popleft()
-    if(X2[0]==0 and len(X2)>1):
+    while(abs(X2[0]-X2[-1])>maxtime):
         X2.popleft()
         Y2.popleft()
-    if(X3[0]==0 and len(X3)>1):
+    while(abs(X3[0]-X3[-1])>maxtime):
         X3.popleft()
         Y3.popleft()
-
-
 
     trace1 = plotly.graph_objs.Scatter(
         x=list(X1),
@@ -140,3 +138,6 @@ def update_graph_scatter(n):
                 yaxis=dict(range=[min([min(Y1),min(Y2),min(Y3)]), max([max(Y1),max(Y2),max(Y3)])]))
             }
 
+
+if __name__=='__main__':
+    app.run_server(debug=False)

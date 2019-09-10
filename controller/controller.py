@@ -6,12 +6,13 @@ from ryu.controller.handler import MAIN_DISPATCHER, DEAD_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.lib import hub
 from stats import CEMon, NqMon, Server
-from viewer import test_plotly as plotly
+# from viewer import test_plotly as plotly
 from datetime import datetime
 from random import randint
 from threading import Thread,Lock
 import multiprocessing
 import requests
+from collections import deque
 
 URL='http://localhost:8050/update'
 class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
@@ -20,21 +21,21 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         self.logger.debug('called init')
         self.datapaths = {}
         self.waiting=0
-        self.initial_wait=1
+        self.initial_wait=0
         self.bytes_lock = Lock()
-        # self.bytes_=0
-        self.actual_polling=1
-        self.cemon = CEMon.CEMon(5,5.0)
-        self.nqmon = NqMon.NqMon(5)
+        self.flow_dict={}
+        self.flow_dict_lock=Lock()
+        self.interesting_flow = ('10.0.0.1', '10.0.0.2')
+        self.actual_polling=5 # freqency for actual polling
+        self.cemon = CEMon.CEMon(0.5,5.0)
+        self.nqmon = NqMon.NqMon(0.5,5.0)
         self.nqmon_server = Server.Server('0.0.0.0',8080)
-        self.nqmon_server.register(self.nqmon.update_interval)
+        # self.nqmon_server.register(self.nqmon.update_interval)
         self.cemon_thread = Thread(target=self._cemon_monitor, name='cemon thread')
         self.nqmon_thread = Thread(target=self._nqmon_monitor, name='nqmon thread')
-        self.plotly_process = multiprocessing.Process(target=self._plotly_process)
         self.actual_thread = Thread(target=self._actual_thread, name='actual thread')
-        self.cemon_thread.start()
-        self.nqmon_thread.start()
-        self.plotly_process.start()
+        # self.cemon_thread.start()
+        # self.nqmon_thread.start()
         self.actual_thread.start()
         
     @set_ev_cls(ofp_event.EventOFPStateChange,
@@ -54,17 +55,20 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         time.sleep(self.initial_wait)
         while True:
             self.logger.debug("cemon")
-            bytes_=self._request_bytes()
+            bytes_,time_=self._request_bytes()
             try:
                 bytes_diff = bytes_-self.cemon_bytes_
-                self.cemon.add_new_window(bytes_diff)
-            except AttributeError:
-                pass
+                time_diff = time_-self.cemon_time_
+                requests.post(URL,json={'time':datetime.now().timestamp(),'val1':bytes_,'val':bytes_diff/time_diff, 'type':'cemon'})
+                self.logger.debug(f'cemon bytes {self.cemon_bytes_}')
+                self.cemon.add_new_window(bytes_diff/time_diff)
+            except (AttributeError,requests.ConnectionError) as e:
+                print(e)
+                pass 
             self.cemon_bytes_=bytes_
-            self.logger.debug(f'cemon bytes {self.cemon_bytes_}')
-            requests.post(URL,json={'time':datetime.now().timestamp(),'val':self.cemon_bytes_, 'type':'cemon'})
+            self.cemon_time_=time_
             t=self.cemon.get_next_wait_time()
-            self.logger.debug(f'cemon going to sleep for {t}s')
+            self.logger.debug(f'cemon going to sleep for {t}s ws:{self.cemon.ws}, mean:{self.cemon.mean}, stdev:{self.cemon.stdev}')
             time.sleep(t)
 
     def _nqmon_monitor(self):
@@ -73,9 +77,17 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         self.nqmon_server.start()
         while True:
             self.logger.debug("nqmon")
-            self.nqmon_bytes_=self._request_bytes()
-            self.logger.debug(f'nqmon bytes {self.nqmon_bytes_}')
-            requests.post(URL,json={'time':datetime.now().timestamp(),'val':self.nqmon_bytes_, 'type':'nqmon'})
+            try:
+                bytes_,time_=self._request_bytes()
+                bytes_diff = bytes_-self.nqmon_bytes_
+                time_diff = time_-self.nqmon_time_
+                requests.post(URL,json={'time':datetime.now().timestamp(),'val1':bytes_,'val':bytes_diff/time_diff, 'type':'nqmon'})
+                self.logger.debug(f'nqmon bytes {self.nqmon_bytes_}')
+            except (AttributeError,requests.ConnectionError) as e:
+                print(e)
+                pass
+            self.nqmon_bytes_=bytes_
+            self.nqmon_time_ = time_
             t=self.nqmon.get_next_wait_time()
             self.logger.debug(f'nqmon going to sleep for {t}s')
             time.sleep(t)
@@ -83,14 +95,18 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
     def _actual_thread(self):
         time.sleep(self.initial_wait)
         while True:
-            self.actual_bytes_=self._request_bytes()
-            requests.post(URL,json={'time':datetime.now().timestamp(),'val':self.actual_bytes_, 'type':'actual'})
+            try:
+                bytes_,time_=self._request_bytes()
+                bytes_diff=bytes_-self.actual_bytes_
+                time_diff=time_-self.actual_time_
+                # requests.post(URL,json={'time':datetime.now().timestamp(),'val1':bytes_,'val':bytes_diff/time_diff, 'type':'actual'})
+            except (AttributeError,requests.ConnectionError) as e:
+                print(e)
+                pass
+            # self.actual_bytes_=bytes_
+            # self.actual_time_=time_
             time.sleep(self.actual_polling)
  
-    def _plotly_process(self):
-        plotly.app.run_server(debug=True,threaded=False,processes=1)
-
-
     def _request_stats(self, datapath):
         self.logger.debug('send stats request: %016x', datapath.id)
         ofproto = datapath.ofproto
@@ -98,9 +114,6 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
 
         req = parser.OFPFlowStatsRequest(datapath)
         datapath.send_msg(req)
-
-        # req = parser.OFPPortStatsRequest(datapath, 0, ofproto.OFPP_ANY)
-        # datapath.send_msg(req)
 
     def _request_bytes(self):
         with self.bytes_lock:
@@ -112,26 +125,42 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
             while self.waiting!=0:
                 self.logger.debug(f'waiting {self.waiting}')
                 time.sleep(0.05)
-            bytes_=self.bytes_
-        return bytes_
-        
+            bytes_, time_ = 0,0
+            return bytes_, time_
 
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
+        time=datetime.now()
         body = ev.msg.body
-        # self.logger.info('datapath         '
-        #                  'in-port  eth-dst           '
-        #                  'out-port packets  bytes')
-        # self.logger.info('---------------- '
-        #                  '-------- ----------------- '
-        #                  '-------- -------- --------')
-        for stat in sorted([flow for flow in body if flow.priority == 1],
-                           key=lambda flow: (flow.match['in_port'],
-                                             flow.match['eth_dst'])):
-            self.logger.info('%016x %8x %17s %8x %8d %8d',
-                             ev.msg.datapath.id,
-                             stat.match['in_port'], stat.match['eth_dst'],
-                             stat.instructions[0].actions[0].port,
-                             stat.packet_count, stat.byte_count)
-            self.bytes_=stat.byte_count
+        flag = False
+        with self.flow_dict_lock:
+            count = 0
+            for stat in body:
+                f= ('table_id=%s '
+                        'duration_sec=%d duration_nsec=%d '
+                        'priority=%d '
+                        'idle_timeout=%d hard_timeout=%d flags=0x%04x '
+                        'cookie=%d packet_count=%d byte_count=%d '
+                        'match=%s instructions=%s' %
+                        (stat.table_id,
+                        stat.duration_sec, stat.duration_nsec,
+                        stat.priority,
+                        stat.idle_timeout, stat.hard_timeout, stat.flags,
+                        stat.cookie, stat.packet_count, stat.byte_count,
+                        stat.match, stat.instructions))
+                self.logger.debug('FlowStats: %s', f)
+
+                try:
+                    flow_id=(stat.match['ipv4_src'],stat.match['ipv4_dst'])
+                    if flow_id not in self.flow_dict:
+                        self.flow_dict[flow_id]=deque([(stat.byte_count,time)],maxlen=30)
+                    else:
+                        self.flow_dict[flow_id].append((stat.byte_count,time))
+                    count+=1
+                except BaseException as e:
+                    print(e)
+        if(count==0):
+            print('count is 0')
+        else:
+            print('count is not 0')
         self.waiting-=1

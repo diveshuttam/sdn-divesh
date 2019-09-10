@@ -1,10 +1,10 @@
 class NqMon():
     """
-    @param inital_interval is in miliseconds
+    @param 
     """
-    def __init__(self, initial_interval=500):
+    def __init__(self, tmin=0.5,tmax=5):
         # interval is in seconds
-        self.interval = initial_interval
+        self.interval = tmin
 
     def get_next_wait_time(self):
         return self.interval
