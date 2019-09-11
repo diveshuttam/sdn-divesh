@@ -22,20 +22,25 @@ class CEMon():
         return self.time
     
     def add_new_window(self,bytes_=0):
-        if(self.ws<3):
+        if(self.ws==0):
             self.window.append(bytes_)
-            self.ws+=1
-            self.sum+=bytes_
-            self.squaresum+=bytes_*bytes_
+            self.window.append(bytes_)
+            self.window.append(bytes_)
+            self.ws=3
+            self.sum+=3*bytes_
+            self.squaresum+=3*bytes_*bytes_
             self.mean=self.sum/self.ws
-            self.stdev=sqrt(self.squaresum/self.ws-self.mean*self.mean)
+            self.lastreading = bytes_
+            self.stdev=0
+            print(f'cemon window {self.window}, mean:{self.mean}, stdev:{self.stdev}, time:{self.time}')
             return
 
         # check for abs later
-        var = abs(bytes_-self.lastreading)
-        if(var>self.mean+2*self.stdev):
+        var = bytes_
+        if(abs(var-self.mean)>2*self.stdev):
             # traffic changes significantly
-            self.time=max(self.tmax,self.time/2)
+            self.time=max(self.tmin,self.time/2)
+            # change to max later
             self.ws=max(3,ceil(self.ws/2))
         else:
             self.time=min(self.tmax,self.time*2)
@@ -54,3 +59,4 @@ class CEMon():
         # average of squaresum - (average of sum) ^ 2
         self.stdev=sqrt(self.squaresum/len(self.window)-self.mean*self.mean)
         print(f'cemon window {self.window}, mean:{self.mean}, stdev:{self.stdev}, time:{self.time}')
+

@@ -32,8 +32,8 @@ class BucketCapture():
     @param is the interval in seconds
     @maxbuckets buckets to accumulte for calculating frequency
     """
-    def __init__(self,interface,interval,maxbuckets):
-        self._interface = interface
+    def __init__(self,interfaces,interval,maxbuckets):
+        self._interface = interfaces
 
         self._interval = interval
         self._interval_lock = Lock()

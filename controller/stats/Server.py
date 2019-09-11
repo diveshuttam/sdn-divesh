@@ -23,25 +23,27 @@ class Server():
         def fun(self):
             self.s.listen()
             logging.info('server started')
-            self.conn, self.addr = self.s.accept()
-            logging.info(f'Connected by Mirrored Host {self.addr}')
-            logging.info('server started')
 
             while True:
-                try:
-                    unpacker = struct.Struct('!Q')
-                    x=self.conn.recv(unpacker.size)
-                    logging.info(x)
-                    pollingFreq = unpacker.unpack(x)[0]
-                    logging.info(f'Polling Freq : {pollingFreq}')
-                    for hook in self.hooks:
-                        Thread(target=hook,args=(pollingFreq,)).start()
-                except:
-                    self.conn.close()
-                    logging.debug('closed existing connections, accepting new connections')
-                    self.conn, self.addr = self.s.accept()
+                logging.info('server accepting new connections')
+                self.conn, self.addr = self.s.accept()
+                logging.info(f'Connected by Mirrored Host {self.addr}')
+                while True:
+                    try:
+                        unpacker = struct.Struct('!Q')
+                        x=self.conn.recv(unpacker.size)
+                        logging.info(x)
+                        pollingFreq = unpacker.unpack(x)[0]
+                        logging.info(f'Polling Freq : {pollingFreq}')
+                        for hook in self.hooks:
+                            Thread(target=hook,args=(pollingFreq,)).start()
+                    except:
+                        try:
+                            self.conn.close()
+                        except:
+                            pass
 
-        self.thread = Thread(target=fun,args=(self,))
+        self.thread = Thread(target=fun,args=(self,), name = 'frequency server')
         self.thread.start()
 
     def join(self):

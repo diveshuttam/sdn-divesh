@@ -43,13 +43,13 @@ def update1():
     print(nicetext)
     if(nicetext['type']=='cemon'):
         X1.append(nicetext['time'])
-        Y1.append(nicetext['val1'])
+        Y1.append(nicetext['val'])
     elif(nicetext['type']=='nqmon'):
         X2.append(nicetext['time'])
-        Y2.append(nicetext['val1'])
+        Y2.append(nicetext['val'])
     elif(nicetext['type']=='actual'):
         X3.append(nicetext['time'])
-        Y3.append(nicetext['val1'])
+        Y3.append(nicetext['val'])
     return nicetext,201
 
 @server.route("/hello",methods=['GET'])
