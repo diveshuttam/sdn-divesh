@@ -8,6 +8,7 @@ from collections import deque
 from datetime import datetime
 from threading import Lock
 from flask import Flask, request, abort
+from error import error
 
 maxtime=30
 server = Flask(__name__)
@@ -130,6 +131,12 @@ def update_graph_scatter(n):
         name='Actual',
         mode='lines+markers'
     )
+
+    v1 = list(zip(X1,Y1))
+    v2 = list(zip(X2,Y2))
+    v3 = list(zip(X3,Y3))
+    print('error cemon', error(v1,v3))
+    print('error nqmon', error(v2,v3))
     # print("HH\n\n--------\n", X1,X2,X3,Y1,Y2,Y3)
     # print(trace1,trace2,trace3)
     return {'data': [trace1,trace2,trace3],

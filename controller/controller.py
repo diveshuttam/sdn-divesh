@@ -66,18 +66,18 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 if(temp is None):
                     time.sleep(self.tmax)
                     continue
-                bytes_,time_=temp
+                bytes_,flow_time, time_=temp
                 bytes_diff = bytes_-self.cemon_bytes_
-                time_diff = time_-self.cemon_time_
+                time_diff = flow_time-self.cemon_time_
                 print('***timediff***', time_diff)
                 requests.post(URL,json={'time':datetime.now().timestamp(),'val1':bytes_,'val':bytes_diff/time_diff, 'type':'cemon'})
                 self.logger.debug(f'cemon bytes {self.cemon_bytes_}')
-                self.cemon.add_new_window(bytes_diff/time_diff)
+                self.cemon.add_new_window(bytes_diff)
             except (AttributeError,requests.ConnectionError) as e:
                 print(e)
                 pass 
             self.cemon_bytes_=bytes_
-            self.cemon_time_=time_
+            self.cemon_time_=flow_time
             t=self.cemon.get_next_wait_time()
             self.logger.debug(f'cemon going to sleep for {t}s with ws:{self.cemon.ws}, mean:{self.cemon.mean}, stdev:{self.cemon.stdev}')
             time.sleep(t)
@@ -92,16 +92,16 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 if(temp is None):
                    time.sleep(self.tmax)
                    continue
-                bytes_,time_=temp
+                bytes_,flow_time, time_=temp
                 bytes_diff = bytes_-self.nqmon_bytes_
-                time_diff = time_-self.nqmon_time_
+                time_diff = flow_time-self.nqmon_time_
                 requests.post(URL,json={'time':datetime.now().timestamp(),'val1':bytes_,'val':bytes_diff/time_diff, 'type':'nqmon'})
                 self.logger.debug(f'nqmon bytes {self.nqmon_bytes_}')
             except (AttributeError,requests.ConnectionError) as e:
                 print(e)
                 pass
             self.nqmon_bytes_=bytes_
-            self.nqmon_time_ = time_
+            self.nqmon_time_ = flow_time
             t=self.nqmon.get_next_wait_time()
             self.logger.debug(f'nqmon going to sleep for {t}s')
             time.sleep(t)
@@ -114,15 +114,15 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 if(temp is None):
                     time.sleep(self.tmax)
                     continue
-                bytes_,time_=temp
+                bytes_,flow_time, time_=temp
                 bytes_diff=bytes_-self.actual_bytes_
-                time_diff=time_-self.actual_time_
+                time_diff=flow_time-self.actual_time_
                 requests.post(URL,json={'time':datetime.now().timestamp(),'val1':bytes_,'val':bytes_diff/time_diff, 'type':'actual'})
             except (AttributeError,requests.ConnectionError) as e:
                 print(e)
                 pass
             self.actual_bytes_=bytes_
-            self.actual_time_=time_
+            self.actual_time_=flow_time
             time.sleep(self.actual_polling)
  
     def _request_stats(self, datapath):
@@ -149,11 +149,11 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 time.sleep(0.05)
             
             try:
-                bytes_, time_ = self.bytes_, self.time_
+                bytes_, flow_time, time_ = self.bytes_, self.flow_time, self.time_
             except:
                 return None
             # print(f'returning {bytes_}, {time_}')
-            return bytes_, time_
+            return bytes_, flow_time, time_
 
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
@@ -166,28 +166,16 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         with self.flow_dict_lock:
             count = 0
             for stat in body:
+                print('some stat found')
                 count+=1
-                f= ('table_id=%s '
-                        'duration_sec=%d duration_nsec=%d '
-                        'priority=%d '
-                        'idle_timeout=%d hard_timeout=%d flags=0x%04x '
-                        'cookie=%d packet_count=%d byte_count=%d '
-                        'match=%s instructions=%s' %
-                        (stat.table_id,
-                        stat.duration_sec, stat.duration_nsec,
-                        stat.priority,
-                        stat.idle_timeout, stat.hard_timeout, stat.flags,
-                        stat.cookie, stat.packet_count, stat.byte_count,
-                        stat.match, stat.instructions))
-                # self.logger.debug('FlowStats: %s', f)
 
                 try:
                     flow_id = (stat.match['eth_src'],stat.match['eth_dst'])
-                    flow_time = stat.duration_sec + (stat.duration_nsec)/1000000000,
+                    flow_time = stat.duration_sec + (stat.duration_nsec)/1000000000
                     if flow_id not in self.flow_dict:
                         self.flow_dict[flow_id]=deque([], maxlen=30)
                     self.flow_dict[flow_id].append((stat.byte_count,flow_time))
-                    self.bytes_, self.time_ = stat.byte_count, time
+                    self.bytes_, self.flow_time, self.time_ = stat.byte_count, flow_time, time
                     # print(f'set {self.bytes_}, {self.time_}')
                 except BaseException as e:
                     raise

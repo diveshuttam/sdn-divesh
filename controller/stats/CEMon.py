@@ -14,7 +14,7 @@ class CEMon():
         self.tmax=tmax
         self.mean=0
         self.stdev=0
-        self.ws=0
+        self.ws=3
 
     def get_next_wait_time(self,bytes_=None):
         if(bytes_ is not None):
@@ -22,19 +22,6 @@ class CEMon():
         return self.time
     
     def add_new_window(self,bytes_=0):
-        if(self.ws==0):
-            self.window.append(bytes_)
-            self.window.append(bytes_)
-            self.window.append(bytes_)
-            self.ws=3
-            self.sum+=3*bytes_
-            self.squaresum+=3*bytes_*bytes_
-            self.mean=self.sum/self.ws
-            self.lastreading = bytes_
-            self.stdev=0
-            print(f'cemon window {self.window}, mean:{self.mean}, stdev:{self.stdev}, time:{self.time}')
-            return
-
         # check for abs later
         var = bytes_
         if(abs(var-self.mean)>2*self.stdev):
