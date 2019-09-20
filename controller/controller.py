@@ -70,7 +70,8 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 bytes_diff = bytes_-self.cemon_bytes_
                 time_diff = flow_time-self.cemon_time_
                 print('***timediff***', time_diff)
-                requests.post(URL,json={'time':datetime.now().timestamp(),'val1':bytes_,'val':bytes_diff/time_diff, 'type':'cemon'})
+                self.cemon_speed_ = bytes_diff/time_diff
+                requests.post(URL,json={'time':(self.cemon_time_+flow_time)/2,'val':self.cemon_speed_, 'type':'cemon'})
                 self.logger.debug(f'cemon bytes {self.cemon_bytes_}')
                 self.cemon.add_new_window(bytes_diff)
             except (AttributeError,requests.ConnectionError) as e:
@@ -95,7 +96,8 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 bytes_,flow_time, time_=temp
                 bytes_diff = bytes_-self.nqmon_bytes_
                 time_diff = flow_time-self.nqmon_time_
-                requests.post(URL,json={'time':datetime.now().timestamp(),'val1':bytes_,'val':bytes_diff/time_diff, 'type':'nqmon'})
+                self.nqmon_speed_ = bytes_diff/time_diff
+                requests.post(URL,json={'time':(self.nqmon_time_+flow_time)/2,'val':self.nqmon_speed_, 'type':'nqmon'})
                 self.logger.debug(f'nqmon bytes {self.nqmon_bytes_}')
             except (AttributeError,requests.ConnectionError) as e:
                 print(e)
@@ -117,7 +119,8 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 bytes_,flow_time, time_=temp
                 bytes_diff=bytes_-self.actual_bytes_
                 time_diff=flow_time-self.actual_time_
-                requests.post(URL,json={'time':datetime.now().timestamp(),'val1':bytes_,'val':bytes_diff/time_diff, 'type':'actual'})
+                self.actual_speed_ = bytes_diff/time_diff
+                requests.post(URL,json={'time':(self.actual_time_+flow_time)/2,'val':self.actual_speed_, 'type':'actual'})
             except (AttributeError,requests.ConnectionError) as e:
                 print(e)
                 pass

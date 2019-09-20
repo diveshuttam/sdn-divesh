@@ -10,7 +10,7 @@ from threading import Lock
 from flask import Flask, request, abort
 from error import error
 
-maxtime=30
+maxtime=60
 server = Flask(__name__)
 lock1 = Lock()
 lock2 = Lock()
@@ -135,14 +135,18 @@ def update_graph_scatter(n):
     v1 = list(zip(X1,Y1))
     v2 = list(zip(X2,Y2))
     v3 = list(zip(X3,Y3))
-    print('error cemon', error(v1,v3))
-    print('error nqmon', error(v2,v3))
+    print('\n***error cemon', error(v1,v3))
+    print('\n***error nqmon', error(v2,v3))
     # print("HH\n\n--------\n", X1,X2,X3,Y1,Y2,Y3)
     # print(trace1,trace2,trace3)
+    yrange = [min([min(Y1),min(Y2),min(Y3)]), max([max(Y1),max(Y2),max(Y3)])]
+    if(yrange[0]==yrange[1]):
+        yrange[0]-=1
+        yrange[1]+=1
     return {'data': [trace1,trace2,trace3],
             'layout': go.Layout(
                 xaxis=dict(range=[min([min(X1),min(X2),min(X3)]), max([max(X1),max(X2),max(X3)])]),
-                yaxis=dict(range=[min([min(Y1),min(Y2),min(Y3)]), max([max(Y1),max(Y2),max(Y3)])]))
+                yaxis=dict(range=yrange))
             }
 
 
