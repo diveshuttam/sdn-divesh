@@ -41,6 +41,9 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         self.cemon_thread.start()
         self.nqmon_thread.start()
         self.actual_thread.start()
+    
+    def value_fun(self, current_bytes, previous_bytes, current_time, previous_time, type_):
+        return {'time':(current_time+previous_time)/2,'val':(current_bytes-previous_bytes)/(current_time-previous_time), 'type':type_}
         
     @set_ev_cls(ofp_event.EventOFPStateChange,
                 [MAIN_DISPATCHER, DEAD_DISPATCHER])
@@ -71,7 +74,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 time_diff = flow_time-self.cemon_time_
                 print('***timediff***', time_diff)
                 self.cemon_speed_ = bytes_diff/time_diff
-                requests.post(URL,json={'time':(self.cemon_time_+flow_time)/2,'val':self.cemon_speed_, 'type':'cemon'})
+                requests.post(URL,json=self.value_fun(bytes_, self.cemon_bytes_, flow_time, self.cemon_time_, 'cemon'))
                 self.logger.debug(f'cemon bytes {self.cemon_bytes_}')
                 self.cemon.add_new_window(bytes_diff)
             except (AttributeError,requests.ConnectionError) as e:
@@ -97,7 +100,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 bytes_diff = bytes_-self.nqmon_bytes_
                 time_diff = flow_time-self.nqmon_time_
                 self.nqmon_speed_ = bytes_diff/time_diff
-                requests.post(URL,json={'time':(self.nqmon_time_+flow_time)/2,'val':self.nqmon_speed_, 'type':'nqmon'})
+                requests.post(URL,json= self.value_fun(bytes_, self.nqmon_bytes_, flow_time, self.nqmon_time_, 'nqmon') )
                 self.logger.debug(f'nqmon bytes {self.nqmon_bytes_}')
             except (AttributeError,requests.ConnectionError) as e:
                 print(e)
@@ -120,7 +123,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 bytes_diff=bytes_-self.actual_bytes_
                 time_diff=flow_time-self.actual_time_
                 self.actual_speed_ = bytes_diff/time_diff
-                requests.post(URL,json={'time':(self.actual_time_+flow_time)/2,'val':self.actual_speed_, 'type':'actual'})
+                requests.post(URL,json=self.value_fun(bytes_, self.actual_bytes_, flow_time, self.actual_time_, 'actual'))
             except (AttributeError,requests.ConnectionError) as e:
                 print(e)
                 pass
@@ -153,17 +156,20 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
             
             try:
                 bytes_, flow_time, time_ = self.bytes_, self.flow_time, self.time_
-            except:
+            except BaseException as e:
+                print(e)
                 return None
             # print(f'returning {bytes_}, {time_}')
             return bytes_, flow_time, time_
 
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
+        print('in reply')
         time=datetime.now().timestamp()
         body = ev.msg.body
         datapath = ev.msg.datapath
         ofp_match = datapath.ofproto_parser
+        print(body)
         
         flag = False
         with self.flow_dict_lock:
