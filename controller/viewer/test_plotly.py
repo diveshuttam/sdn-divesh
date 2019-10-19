@@ -96,6 +96,19 @@ app.layout = html.Div(
         ),
     ]
 )
+min_err_n = None
+max_err_n = None
+avg_err_n = None
+count_err_n = 0
+sum_err_n = 0
+
+min_err_c = None
+max_err_c = None
+avg_err_c = None
+count_err_c = 0
+sum_err_c = 0
+
+
 
 
 @app.callback(Output('live-graph', 'figure'),
@@ -135,8 +148,42 @@ def update_graph_scatter(n):
     v1 = list(zip(X1,Y1))
     v2 = list(zip(X2,Y2))
     v3 = list(zip(X3,Y3))
-    print('\n***error cemon', error(v1,v3))
-    print('\n***error nqmon', error(v2,v3))
+
+    ce = error(v1,v3)
+    ne = error(v2,v3)
+
+    global min_err_n
+    global max_err_n
+    global avg_err_n
+    global count_err_n
+    global sum_err_n
+
+    global min_err_c
+    global max_err_c
+    global avg_err_c
+    global count_err_c
+    global sum_err_c
+
+    if(min_err_c==None):
+        min_err_c=max_err_c=ce
+    if(min_err_n==None):
+        min_err_n=max_err_n=ne
+
+    if(ne!=None):
+        min_err_n=min(min_err_n,ne)
+        max_err_n=max(max_err_n,ne)
+        count_err_n+=1
+        sum_err_n+=ne
+        avg_err_n=sum_err_n/count_err_n
+    if(ce!=None):
+        min_err_c=min(min_err_c,ce)
+        max_err_c=max(max_err_c,ce)
+        sum_err_c+=ce
+        count_err_c+=1
+        avg_err_c=sum_err_c/count_err_c
+
+    print('\n***error nemon', ne,  min_err_n, max_err_n, avg_err_n)
+    print('\n***error cqmon', ce,  min_err_c, max_err_c, avg_err_c)
     # print("HH\n\n--------\n", X1,X2,X3,Y1,Y2,Y3)
     # print(trace1,trace2,trace3)
     yrange = [min([min(Y1),min(Y2),min(Y3)]), max([max(Y1),max(Y2),max(Y3)])]

@@ -1,53 +1,41 @@
 from math import sqrt
-
+from scipy import interpolate, signal
+import numpy as np
 """
 @param a list of pairs (time,val)
 @param b list of pairs (time,val)
 """
-def error(a, b):
-    # print(a,b)
-    if(not(len(a)>2 and len(b)>2)):
+def count_peaks(x):
+    x=list(map(lambda a:a[1],x))
+    ans = 0
+    if(len(x)<3):
         return 0
-    
-    interval_b = max(a[0][0],b[0][0])
-    interval_e = min(a[-1][0],b[-1][0])
-    timelist = []
-    for val in range(int(interval_b*10),int(interval_e*10+1),5):
-        time = val/10
-        timelist.append(time)
-    
-    n = len(timelist)
-    a1=[]
-    b1=[]
-    
-    i=0
-    for t in timelist:
-        # find a append a
-        while(t>a[i+1][0]):
-            i+=1
+    for i,j,k in zip(x,x[1:],x[2:]):
+        if(j>=max(k,i)):
+            ans+=1
+    return ans
 
-        t1,v1 = a[i]
-        t2,v2 = a[i+1]
+def error(a, b):
+    if(len(a)<=2 or len(b)<=2):
+        return None
+    xa = list(map(lambda x:x[0], a))  
+    ya = list(map(lambda x:x[1], a))  
+    xb = list(map(lambda x:x[0], b))  
+    yb = list(map(lambda x:x[1], b))  
 
-        v = (t-t2)*(v2-v1)/(t2-t1) + v2
-        a1.append(v)
-        # print("____",t1,t2,t,':',v1,v2,v)
+    interval_b = max(xa[0], xb[0])
+    interval_e = min(xa[-1], xb[-1])
+    # print('interval',interval_b, interval_e,"\n")
 
-    i=0
-    for t in timelist:
-        # find b append b
-        while(t>b[i+1][0]):
-            i+=1
+    fa = interpolate.interp1d(xa, ya,kind = 'linear')
+    fb = interpolate.interp1d(xb, yb,kind = 'linear')
 
-        t1,v1 = b[i]
-        t2,v2 = b[i+1]
+    ls=np.linspace(interval_b,interval_e, max(len(ya),len(yb))*10)
+    # print(xa,xb,ls)
+    a=ya_ = fa(ls)
+    b=yb_ = fb(ls)
+    # print("\n--------------------------",ya_, yb_,"\n---------------------------------------------")
+    a = (a - np.mean(a)) / (np.std(a) * len(a))
+    b = (b - np.mean(b)) / (np.std(b))
 
-        v = (t-t2)*(v2-v1)/(t2-t1) + v2
-        b1.append(v)
-
-    error_sum = 0
-    # print(a1,'\n',b1___),
-    for i,j in zip(a1,b1):
-        error_sum+=((i-j)*(i-j))
-    
-    return sqrt(error_sum/n)
+    return max(signal.correlate(a,b))
