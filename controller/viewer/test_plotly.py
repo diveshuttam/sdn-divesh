@@ -36,6 +36,19 @@ Y3.append(0)
 init1 = True
 init2 = True
 init3 = True
+
+min_err_n = None
+max_err_n = None
+avg_err_n = None
+count_err_n = 0
+sum_err_n = 0
+
+min_err_c = None
+max_err_c = None
+avg_err_c = None
+count_err_c = 0
+sum_err_c = 0
+
 @server.route("/update",methods=['POST'])
 def update1():
     if not request.json:
@@ -53,9 +66,71 @@ def update1():
         Y3.append(nicetext['val'])
     return nicetext,201
 
-@server.route("/hello",methods=['GET'])
+def reset():
+    global X1
+    global Y1
+    
+    global X2
+    global Y2
+
+    global X3
+    global Y3
+
+    global init1
+    global init2
+    global init3
+
+    X1 = deque()
+    X1.append(0)
+    Y1 = deque()
+    Y1.append(0)
+
+    X2 = deque()
+    X2.append(0)
+    Y2 = deque()
+    Y2.append(0)
+
+
+
+    X3 = deque()
+    X3.append(0)
+    Y3 = deque()
+    Y3.append(0)
+
+    global min_err_n
+    global max_err_n
+    global avg_err_n
+    global count_err_n
+    global sum_err_n
+
+    global min_err_c
+    global max_err_c
+    global avg_err_c
+    global count_err_c
+    global sum_err_c
+
+    min_err_n = None
+    max_err_n = None
+    avg_err_n = None
+    count_err_n = 0
+    sum_err_n = 0
+
+    min_err_c = None
+    max_err_c = None
+    avg_err_c = None
+    count_err_c = 0
+    sum_err_c = 0
+
+    init1 = True
+    init2 = True
+    init3 = True
+
+@server.route("/reset",methods=['POST'])
 def updat1():
-    return 'hello world',200
+    reset()
+    js=request.json
+    print(f"reseting {js['alpha'], js['delta']}")
+    return 'done',200
 
 
 initial_trace1 = plotly.graph_objs.Scatter(
@@ -96,17 +171,7 @@ app.layout = html.Div(
         ),
     ]
 )
-min_err_n = None
-max_err_n = None
-avg_err_n = None
-count_err_n = 0
-sum_err_n = 0
 
-min_err_c = None
-max_err_c = None
-avg_err_c = None
-count_err_c = 0
-sum_err_c = 0
 
 
 
@@ -198,4 +263,4 @@ def update_graph_scatter(n):
 
 
 if __name__=='__main__':
-    app.run_server(debug=False)
+    app.run_server(host='0.0.0.0',port =8050, debug=False)

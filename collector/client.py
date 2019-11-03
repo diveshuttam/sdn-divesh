@@ -36,7 +36,7 @@ class Client:
         self.thread.start()
         while(not self.connected):
             time.sleep(0.1)
-
+        
     def join(self):
         self.thread.join()
     

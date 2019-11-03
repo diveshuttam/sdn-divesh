@@ -4,6 +4,7 @@ This module takes care of calculating frequency of the captured traffic
 
 import logging
 from threading import Thread
+import sys
 """
 Class provides hooks to calculate frequency of current traffic
 """
@@ -30,12 +31,14 @@ class FrequencyCalculator():
     Register this hook on the bucket complete event in capture
     """
     def calculate_frequency(self, buckets):
+        print("buckets",buckets,"delta",self.curr_delta)
+        sys.stdout.flush()
         n=len(buckets)
         count = 0
         sum_change = 0
         for x in range(n-1):
             try:
-                change = abs((buckets[x]._bytes-buckets[x+1]._bytes)/(buckets[x]._bytes+1))
+                change = abs((buckets[x]._bytes-buckets[x+1]._bytes)*2/((buckets[x]._bytes+buckets[x+1]._bytes)+1))
             except ZeroDivisionError:
                 if(buckets[x]._bytes!=buckets[x+1]._bytes):
                     change = self.curr_delta

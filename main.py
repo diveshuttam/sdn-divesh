@@ -14,7 +14,7 @@ if __name__ == '__main__':
     fq = FrequencyCalculator()
     plot = LivePlot(interval=1000,bucketrange=20)
     plot1 = LivePlot(interval=1000,bucketrange=20)
-    host,port = '0.0.0.0',4748
+    host,port = '0.0.0.0',4747
     server = Server(host,port)
     client = Client(host,port)
     def plot_data(buckets):

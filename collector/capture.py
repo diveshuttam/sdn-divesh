@@ -20,7 +20,12 @@ class Bucket():
         self._starttime=starttime
         self._endtime=endtime
         self._bytes=bytes_
+    
+    def __repr__(self):
+        return f"{self._bytes}"
 
+    def __str__(self):
+        return self.__repr__()
 
 """
 Bucket capture class runs threads to captures packets
@@ -150,7 +155,10 @@ class BucketCapture():
     Registers hooks to the maxbucket reached event
     """
     def register(self, hook):
-        self._hooks.append(hook)
+        if(self._hooks==[]):
+            self._hooks.append(hook)
+        else:
+            self._hooks[0]=hook
 
 
 """

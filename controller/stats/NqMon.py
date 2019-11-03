@@ -1,3 +1,4 @@
+import requests
 class NqMon():
     """
     @param 
@@ -14,7 +15,7 @@ class NqMon():
     def update_interval(self,frequency_count):
         if(frequency_count==0):
             self.interval = self.tmax
-        if(frequency_count>0):
+        elif(frequency_count>0):
             self.interval=10/frequency_count
             self.interval=max(self.interval, self.tmin)
             self.interval=min(self.interval, self.tmax)

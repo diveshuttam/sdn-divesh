@@ -14,7 +14,7 @@ import multiprocessing
 import requests
 from collections import deque
 
-URL='http://localhost:8050/update'
+URL='http://192.168.1.3:8050/update'
 class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
     def __init__(self, *args, **kwargs):
         super(SimpleMonitor13, self).__init__(*args, **kwargs)
