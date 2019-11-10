@@ -35,7 +35,7 @@ def error(a, b):
     a=ya_ = fa(ls)
     b=yb_ = fb(ls)
     # print("\n--------------------------",ya_, yb_,"\n---------------------------------------------")
-    a = (a - np.mean(a)) / (np.std(a) * len(a))
-    b = (b - np.mean(b)) / (np.std(b))
+    a = (a - np.mean(a)) / max(max(a),abs(min(a)))
+    b = (b - np.mean(b)) / max(max(b),abs(min(b)))
 
-    return max(signal.correlate(a,b))
+    return sum((b-a)**2)
