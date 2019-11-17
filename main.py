@@ -10,10 +10,10 @@ if __name__ == '__main__':
     logging.basicConfig(format=log_format, level=logging.INFO,
                     datefmt="%H:%M:%S")
     
-    capture = BucketCapture("enp0s3",0.1,20)
+    capture = BucketCapture("enp0s3",10/11,11)
     fq = FrequencyCalculator()
-    plot = LivePlot(interval=1000,bucketrange=20)
-    plot1 = LivePlot(interval=1000,bucketrange=20)
+    plot = LivePlot(interval=1000,bucketrange=11)
+    plot1 = LivePlot(interval=1000,bucketrange=11)
     host,port = '0.0.0.0',4747
     server = Server(host,port)
     client = Client(host,port)

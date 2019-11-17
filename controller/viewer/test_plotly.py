@@ -56,7 +56,7 @@ def update1():
     nicetext=request.json
     print(nicetext)
     if(nicetext['type']=='cemon'):
-        X1.append(nicetext['time'])
+        X1.append((nicetext['time']))
         Y1.append(nicetext['val'])
     elif(nicetext['type']=='nqmon'):
         X2.append(nicetext['time'])

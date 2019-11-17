@@ -1,21 +1,18 @@
-from scipy import signal
-import numpy as np
-sig = np.repeat([0., 1., 1., 0., 1., 0., 0., 1.], 128)
-sig_noise = sig + np.random.randn(len(sig))
-corr = signal.correlate(sig_noise, np.ones(128), mode='same') / 128
-import matplotlib.pyplot as plt
-clock = np.arange(64, len(sig), 128)
-fig, (ax_orig, ax_noise, ax_corr) = plt.subplots(3, 1, sharex=True)
-ax_orig.plot(sig)
-ax_orig.plot(clock, sig[clock], 'ro')
-ax_orig.set_title('Original signal')
-ax_noise.plot(sig_noise)
-ax_noise.set_title('Signal with noise')
-ax_corr.plot(corr)
-ax_corr.plot(clock, corr[clock], 'ro')
-ax_corr.axhline(0.5, ls=':')
-ax_corr.set_title('Cross-correlated with rectangular pulse')
-ax_orig.margins(0, 0.1)
-fig.tight_layout()
-fig.show()
-input()
+x = list(open('/media/sf_Divesh_2016A7TS0045P/sop/sdn-divesh/controller/viewer/outputs/output_poisson.txt'))
+for i in range(len(x)):
+    l=x[i]
+    if(x[i].startswith("reseting")):
+        d = x[i][10:-2].split(',')
+        try:
+            print(delta,alpha,e1[1],','.join(map(str.strip,e1[2:])), e2[1], ','.join(map(str.strip,e2[2:])), sep=',')
+        except:
+            pass
+        delta,alpha = (tuple(map(float,d)))
+        continue
+    elif(x[i].startswith("***error") and "cqmon" in x[i] and "POST" not in x[i]) :
+        e1 = x[i].split(' ')
+    elif(x[i].startswith("***error") and "nemon" in x[i] and "POST" not in x[i] ):
+        e2 = x[i].split(' ')
+
+
+print(delta,alpha,e1[1],','.join(map(str.strip,e1[2:])), e2[1], ','.join(map(str.strip,e2[2:])), sep=',')

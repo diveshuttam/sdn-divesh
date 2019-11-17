@@ -12,9 +12,9 @@ if __name__ == '__main__':
     c=Client('192.168.1.3',4747)
     bc=BucketCapture(['h1-eth1','h1-eth2'],0.5,20)
     flag = False
-    for delta in range(10,90+1,10):
-        for alpha in range(5,95+1,10):
-            fc=FrequencyCalculator(delta=delta/100,alpha=alpha/100,minf=3,maxf=20)
+    for delta in range(60,90+1,10):
+        for alpha in range(85,95+1,10):
+            fc=FrequencyCalculator(delta=delta/100,alpha=alpha/100,minf=20,maxf=20)
             bc.register(fc.calculate_frequency)
             fc.register(c.frequency_send)
 

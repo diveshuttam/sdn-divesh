@@ -14,7 +14,7 @@ class FrequencyCalculator():
     @param alpha is the weight given to past
     @param delta is the threashold which determines sensitivity
     """
-    def __init__(self,delta=0.3,alpha=0.05,minf=3,maxf=20):
+    def __init__(self,delta=0.3,alpha=0.05,minf=1,maxf=20):
         self.current_frequency=0
         self.previous_frequency=0
         self.curr_delta = delta
@@ -51,7 +51,7 @@ class FrequencyCalculator():
         self.prev_delta = self.curr_delta
         self.curr_delta = self.prev_delta*(1-self.alpha) + self.bucket_change_avg*self.alpha
         self.previous_frequency = self.current_frequency
-        self.current_frequency = 2*count
+        self.current_frequency = max(self.minf, min(self.maxf, 2*count))
         logging.info(f"curr freq: {self.current_frequency}")
 
         for hook in self.hooks:

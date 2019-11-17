@@ -104,7 +104,7 @@ if __name__ == '__main__':
     format = "%(asctime)s: %(message)s: %(funcName)s"
     logging.basicConfig(format=format, level=logging.INFO,
                         datefmt="%H:%M:%S")
-    capture = BucketCapture("enp0s3",0.1,20)
+    capture = BucketCapture("enp0s3",10/11,11)
     def update_hook(buckets):
         logging.info("called update hook")
         for bucket in buckets:
