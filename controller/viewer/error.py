@@ -15,25 +15,27 @@ def count_peaks(x):
             ans+=1
     return ans
 
-def correlate(a,b):
-    assert(len(b)<=len(a))
-
-
 def error(a, b):
     if(len(a)<=2 or len(b)<=2):
         return None
-    xa = list(map(lambda x:x[0], a))
+    xa = list(map(lambda x:x[0], a))  
     ya = list(map(lambda x:x[1], a))  
-    xb = list(map(lambda x:x[0], b))
+    xb = list(map(lambda x:x[0], b))  
     yb = list(map(lambda x:x[1], b))  
-
-    print('******')
 
     interval_b = max(xa[0], xb[0])
     interval_e = min(xa[-1], xb[-1])
-    total_interval = abs(interval_b-interval_e)
+    # print('interval',interval_b, interval_e,"\n")
+
     fa = interpolate.interp1d(xa, ya,kind = 'linear')
     fb = interpolate.interp1d(xb, yb,kind = 'linear')
-    ls = np.linspace(interval_b,interval_e,total_interval*10)
 
-    return correlate(fa(ls),fb(ls))
+    ls=np.linspace(interval_b,interval_e, max(len(ya),len(yb))*10)
+    # print(xa,xb,ls)
+    a=ya_ = fa(ls)
+    b=yb_ = fb(ls)
+    # print("\n--------------------------",ya_, yb_,"\n---------------------------------------------")
+    a = (a - np.mean(a)) / (np.std(a) * len(a))
+    b = (b - np.mean(b)) / (np.std(b))
+
+    return max(signal.correlate(a,b))
