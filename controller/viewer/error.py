@@ -15,6 +15,14 @@ def count_peaks(x):
             ans+=1
     return ans
 
+def correlate(a,b):
+    a = np.array(a)
+    b = np.array(b)
+    a = (a - np.mean(a)) / (np.std(a))
+    b = (b - np.mean(b)) / (np.std(b))
+
+    return signal.correlate(a,b)
+
 def error(a, b):
     if(len(a)<=2 or len(b)<=2):
         return None
@@ -35,7 +43,4 @@ def error(a, b):
     a=ya_ = fa(ls)
     b=yb_ = fb(ls)
     # print("\n--------------------------",ya_, yb_,"\n---------------------------------------------")
-    a = (a - np.mean(a)) / (np.std(a) * len(a))
-    b = (b - np.mean(b)) / (np.std(b))
-
-    return max(signal.correlate(a,b))
+    return max(correlate(a,b))/len(a)
