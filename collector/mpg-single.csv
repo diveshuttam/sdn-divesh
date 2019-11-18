@@ -1,0 +1,162 @@
+02:04:43: client connected to the server: start_fun
+0.35, 0.9
+buckets [0, 0, 0, 0, 0, 110500, 141027, 103684, 112969, 92361, 97244] delta 0.9
+02:04:53: curr freq: 2: calculate_frequency
+02:04:53: sending frequency: 2: frequency_send
+buckets [112969, 108796, 107548, 75992, 66844, 70262, 65754, 65044, 75992, 55384, 66844] delta 0.6860052038598012
+02:05:04: curr freq: 2: calculate_frequency
+02:05:04: sending frequency: 2: frequency_send
+buckets [61312, 67554, 59248, 52230, 62468, 56672, 53721, 55009, 46368, 47012, 35420] delta 0.49156474294299085
+02:05:14: curr freq: 2: calculate_frequency
+02:05:14: sending frequency: 2: frequency_send
+buckets [48944, 34776, 45080, 33757, 44705, 31556, 34710, 37418, 27692, 40572, 28980] delta 0.36054651432825335
+02:05:24: curr freq: 2: calculate_frequency
+02:05:24: sending frequency: 2: frequency_send
+buckets [28980, 34132, 31556, 27048, 34132, 25760, 26404, 32844, 25116, 31556, 23828] delta 0.32841340389696305
+02:05:34: curr freq: 2: calculate_frequency
+02:05:34: sending frequency: 2: frequency_send
+buckets [25760, 30912, 24472, 25694, 32266, 23828, 28270, 25182, 22540, 27692, 21252] delta 0.28072999210605176
+02:05:44: curr freq: 2: calculate_frequency
+02:05:44: sending frequency: 2: frequency_send
+buckets [28336, 21980, 20608, 28980, 21252, 27692, 21252, 29624, 21252, 25760, 21896] delta 0.24742635200913665
+02:05:54: curr freq: 14: calculate_frequency
+02:05:54: sending frequency: 14: frequency_send
+buckets [25760, 19964, 20542, 25826, 21252, 25050, 21962, 20608, 27048, 19964, 21896] delta 0.24835741134236183
+02:06:04: curr freq: 6: calculate_frequency
+02:06:04: sending frequency: 6: frequency_send
+buckets [21896, 26404, 19320, 19964, 24472, 19320, 25760, 20608, 26338, 19386, 22624] delta 0.22188568657043967
+02:06:14: curr freq: 12: calculate_frequency
+02:06:14: sending frequency: 12: frequency_send
+buckets [21896, 25116, 19320, 24472, 19320, 23118, 20674, 18676, 26404, 18032, 25116] delta 0.22044670924825382
+02:06:24: curr freq: 12: calculate_frequency
+02:06:24: sending frequency: 12: frequency_send
+buckets [19964, 18676, 24472, 18676, 25116, 18676, 25116, 21252, 18676, 25760, 19964] delta 0.22409058241287205
+02:06:34: curr freq: 14: calculate_frequency
+02:06:34: sending frequency: 14: frequency_send
+buckets [19320, 23184, 16744, 23828, 17388, 21830, 20674, 17388, 23912, 18032, 17388] delta 0.2280607715800428
+02:06:44: curr freq: 10: calculate_frequency
+02:06:44: sending frequency: 10: frequency_send
+buckets [23828, 18032, 19320, 23828, 17388, 22540, 16100, 18676, 22540, 16744, 18032] delta 0.22707029959403674
+02:06:54: curr freq: 10: calculate_frequency
+02:06:54: sending frequency: 10: frequency_send
+buckets [22540, 16744, 21896, 17654, 16100, 22540, 16100, 18032, 21896, 16744, 20542] delta 0.22331789482218894
+02:07:04: curr freq: 10: calculate_frequency
+02:07:04: sending frequency: 10: frequency_send
+buckets [19386, 17388, 19898, 18098, 23184, 15456, 16744, 21252, 16744, 18676, 18676] delta 0.22607983004058094
+02:07:14: curr freq: 8: calculate_frequency
+02:07:14: sending frequency: 8: frequency_send
+buckets [19188, 18164, 16100, 19964, 18032, 16744, 18032, 21896, 15456, 17388, 20608] delta 0.2046344118439099
+02:07:25: curr freq: 4: calculate_frequency
+02:07:25: sending frequency: 4: frequency_send
+buckets [16184, 19320, 16100, 20608, 14812, 16100, 21896, 14812, 16100, 20608, 15456] delta 0.1842841960529756
+02:07:35: curr freq: 12: calculate_frequency
+02:07:35: sending frequency: 12: frequency_send
+buckets [16034, 20030, 15456, 20608, 15456, 18676, 16100, 20608, 15456, 14812, 20608] delta 0.20099666783470682
+02:07:45: curr freq: 14: calculate_frequency
+02:07:45: sending frequency: 14: frequency_send
+buckets [15456, 20608, 14812, 19320, 15456, 19898, 16810, 14812, 20608, 14168, 14896] delta 0.21075386512630956
+02:07:55: curr freq: 14: calculate_frequency
+02:07:55: sending frequency: 14: frequency_send
+buckets [19320, 14168, 18032, 15456, 19320, 15456, 16034, 16166, 14746, 17454, 13524] delta 0.2207426473995151
+02:08:05: curr freq: 10: calculate_frequency
+02:08:05: sending frequency: 10: frequency_send
+buckets [19320, 14168, 14168, 18676, 12880, 19320, 12880, 18676, 14168, 18032, 14168] delta 0.20314514971077607
+02:08:15: curr freq: 18: calculate_frequency
+02:08:15: sending frequency: 18: frequency_send
+buckets [14168, 19320, 13524, 18032, 14168, 18610, 13590, 16034, 17538, 13524, 18676] delta 0.23254043734024088
+02:08:25: curr freq: 16: calculate_frequency
+02:08:25: sending frequency: 16: frequency_send
+buckets [14812, 14812, 16678, 16810, 14812, 14812, 18676, 14168, 14168, 18676, 14168] delta 0.24222668266311714
+02:08:35: curr freq: 6: calculate_frequency
+02:08:35: sending frequency: 6: frequency_send
+buckets [14168, 19320, 14368, 16678, 14878, 12880, 17388, 12880, 17388, 11592, 16100] delta 0.20319317102791198
+02:08:45: curr freq: 14: calculate_frequency
+02:08:45: sending frequency: 14: frequency_send
+buckets [14168, 13524, 12880, 17388, 12880, 15390, 14234, 13524, 17322, 13590, 13524] delta 0.22404327266021892
+02:08:55: curr freq: 8: calculate_frequency
+02:08:55: sending frequency: 8: frequency_send
+buckets [15456, 12236, 12880, 16100, 12236, 16100, 12880, 16744, 12236, 13524, 17388] delta 0.1977902043465402
+02:09:05: curr freq: 16: calculate_frequency
+02:09:05: sending frequency: 16: frequency_send
+buckets [12236, 12236, 16100, 12236, 17388, 12880, 12236, 17388, 13524, 12236, 18032] delta 0.20541114913918115
+02:09:15: curr freq: 14: calculate_frequency
+02:09:15: sending frequency: 14: frequency_send
+buckets [11592, 16744, 13524, 12880, 16034, 13590, 12236, 17322, 12302, 12964, 16100] delta 0.2148278679258499
+02:09:25: curr freq: 10: calculate_frequency
+02:09:25: sending frequency: 10: frequency_send
+buckets [11592, 16100, 11592, 14812, 14168, 11592, 16100, 12236, 12236, 15456, 12236] delta 0.21189161976784393
+02:09:35: curr freq: 14: calculate_frequency
+02:09:35: sending frequency: 14: frequency_send
+buckets [14812, 12236, 14812, 12880, 11592, 12236, 15456, 12880, 15456, 11592, 15456] delta 0.21482945673649437
+Traceback (most recent call last):
+  File "/home/mininet/.local/lib/python3.6/site-packages/urllib3/connectionpool.py", line 603, in urlopen
+    chunked=chunked)
+  File "/home/mininet/.local/lib/python3.6/site-packages/urllib3/connectionpool.py", line 387, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 2, in raise_from
+  File "/home/mininet/.local/lib/python3.6/site-packages/urllib3/connectionpool.py", line 383, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/lib/python3.6/http/client.py", line 1346, in getresponse
+    response.begin()
+  File "/usr/lib/python3.6/http/client.py", line 307, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib/python3.6/http/client.py", line 276, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/mininet/.local/lib/python3.6/site-packages/requests/adapters.py", line 449, in send
+    timeout=timeout
+  File "/home/mininet/.local/lib/python3.6/site-packages/urllib3/connectionpool.py", line 641, in urlopen
+    _stacktrace=sys.exc_info()[2])
+  File "/home/mininet/.local/lib/python3.6/site-packages/urllib3/util/retry.py", line 368, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "/home/mininet/.local/lib/python3.6/site-packages/urllib3/packages/six.py", line 685, in reraise
+    raise value.with_traceback(tb)
+  File "/home/mininet/.local/lib/python3.6/site-packages/urllib3/connectionpool.py", line 603, in urlopen
+    chunked=chunked)
+  File "/home/mininet/.local/lib/python3.6/site-packages/urllib3/connectionpool.py", line 387, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 2, in raise_from
+  File "/home/mininet/.local/lib/python3.6/site-packages/urllib3/connectionpool.py", line 383, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/lib/python3.6/http/client.py", line 1346, in getresponse
+    response.begin()
+  File "/usr/lib/python3.6/http/client.py", line 307, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib/python3.6/http/client.py", line 276, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+urllib3.exceptions.ProtocolError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response',))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "main.py", line 27, in <module>
+    requests.post('http://192.168.1.3:8050/reset',json={"alpha":alpha, "delta":delta})
+  File "/home/mininet/.local/lib/python3.6/site-packages/requests/api.py", line 116, in post
+    return request('post', url, data=data, json=json, **kwargs)
+  File "/home/mininet/.local/lib/python3.6/site-packages/requests/api.py", line 60, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/mininet/.local/lib/python3.6/site-packages/requests/sessions.py", line 533, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/mininet/.local/lib/python3.6/site-packages/requests/sessions.py", line 646, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/mininet/.local/lib/python3.6/site-packages/requests/adapters.py", line 498, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response',))
+02:09:45: curr freq: 6: calculate_frequency
+02:09:45: sending frequency: 6: frequency_send
+buckets [12880, 11592, 15456, 11592, 11592, 16744, 11592, 14168, 12880, 14168, 13524] delta 0.20429672949146493
+02:09:55: curr freq: 8: calculate_frequency
+02:09:55: sending frequency: 8: frequency_send
+Exception ignored in: <module 'threading' from '/usr/lib/python3.6/threading.py'>
+Traceback (most recent call last):
+  File "/usr/lib/python3.6/threading.py", line 1294, in _shutdown
+    t.join()
+  File "/usr/lib/python3.6/threading.py", line 1056, in join
+    self._wait_for_tstate_lock()
+  File "/usr/lib/python3.6/threading.py", line 1072, in _wait_for_tstate_lock
+    elif lock.acquire(block, timeout):
+KeyboardInterrupt

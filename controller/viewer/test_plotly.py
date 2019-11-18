@@ -1,3 +1,4 @@
+import sys
 import dash
 from dash.dependencies import Output, Input
 import dash_core_components as dcc
@@ -10,7 +11,8 @@ from threading import Lock
 from flask import Flask, request, abort
 from error import error
 
-maxtime=60
+count = 0
+maxtime=5*60
 server = Flask(__name__)
 lock1 = Lock()
 lock2 = Lock()
@@ -54,7 +56,7 @@ def update1():
     if not request.json:
         abort(400)
     nicetext=request.json
-    print(nicetext)
+    print(nicetext['type'],nicetext['val'])
     if(nicetext['type']=='cemon'):
         X1.append((nicetext['time']))
         Y1.append(nicetext['val'])
@@ -127,9 +129,16 @@ def reset():
 
 @server.route("/reset",methods=['POST'])
 def updat1():
-    reset()
     js=request.json
+    print("x1,y1",X1,Y1)
+    print("x2,y2",X2,Y2)
+    print("x3,y3",X3,Y3)
     print(f"reseting {js['alpha'], js['delta']}")
+    reset()
+    global count
+    count+=1
+    if(count==2):
+        sys.exit()
     return 'done',200
 
 

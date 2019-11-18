@@ -1,4 +1,4 @@
-x = list(open('/media/sf_Divesh_2016A7TS0045P/sop/sdn-divesh/controller/viewer/outputs/output_poisson.txt'))
+x = list(open('/media/sf_Divesh_2016A7TS0045P/sop/sdn-divesh/controller/viewer/outputs/output_poisson_rmse.txt'))
 for i in range(len(x)):
     l=x[i]
     if(x[i].startswith("reseting")):
