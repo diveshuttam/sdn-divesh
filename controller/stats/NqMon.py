@@ -20,3 +20,7 @@ class NqMon():
             self.interval=max(self.interval, self.tmin)
             self.interval=min(self.interval, self.tmax)
         print(f'new interval for nqmon is {self.interval}')
+    
+    def reset(self):
+        self.interval = self.tmin
+

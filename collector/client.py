@@ -6,6 +6,7 @@ import struct
 import time
 from threading import Thread
 import logging
+import requests
 
 """
 Client class which runs an client instance on collector
@@ -17,26 +18,9 @@ class Client:
     def __init__(self,ip,port):
         self.ip=ip
         self.port=port
-        # self.url = f"http://{ip}:{port}/"
+        self.url = f"http://{ip}:{port}/update"
         self.server_socks=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.connected=False
     
-    def start(self):
-        def start_fun(self):
-            while True:
-                try:
-                    self.server_socks.connect((self.ip, self.port)) # connect to the server
-                except:
-                    raise
-                else:
-                    logging.info("client connected to the server")
-                    self.connected=True
-                    break
-        self.thread=Thread(target=start_fun, args=(self,))
-        self.thread.start()
-        while(not self.connected):
-            time.sleep(0.1)
-        
     def join(self):
         self.thread.join()
     
@@ -48,16 +32,17 @@ class Client:
     Attach this as a hook to fq object of FrequencyCalculation class
     """
     def frequency_send(self,frequency):
-        if(self.connected):
-            logging.info(f'sending frequency: {frequency}')
-            self.server_socks.sendall(struct.pack('!Q',frequency))
+        logging.info(f'sending frequency: {frequency}')
+        d = {
+            'frequency': frequency
+        }
+        requests.post(self.url,json=d)
 
 if __name__ == "__main__":
     log_format = "%(asctime)s: %(message)s: %(funcName)s"
     logging.basicConfig(format=log_format, level=logging.INFO,
                     datefmt="%H:%M:%S")
     client = Client('0.0.0.0',4747)
-    client.start()
     for i in range(10):
         logging.info(f'sending frequency {i}')
         client.frequency_send(i)

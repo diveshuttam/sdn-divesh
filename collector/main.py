@@ -4,25 +4,29 @@ from frequency import FrequencyCalculator
 from client import Client
 import logging
 import time
-import requests
 
-if __name__ == '__main__':
-    log_format = "%(asctime)s: %(message)s: %(funcName)s"
-    logging.basicConfig(format=log_format, level=logging.INFO,
-                    datefmt="%H:%M:%S")
-    c=Client('192.168.1.3',4747)
-    bc=BucketCapture(['h1-eth1','h1-eth2'],10/11,11)
-    flag = False
-    delta=0.7
-    alpha = 0.45
+from flask import Flask, request
+
+app = Flask(__name__)
+@app.route('/reset',methods=['POST'])
+def reset():
+    global bc
+    global c
+    js = request.json
+    delta = js['delta']
+    alpha = js['alpha']
     fc=FrequencyCalculator(delta=delta,alpha=alpha,minf=2,maxf=20)
     bc.register(fc.calculate_frequency)
     fc.register(c.frequency_send)
-
     print(f"{alpha}, {delta}")
-    requests.post('http://192.168.1.3:8050/reset',json={"alpha":alpha, "delta":delta})
+    return "done", 201
+
+if __name__ == '__main__':
+    global c
+    global bc
+    c=Client('192.168.1.3',4747)
+    bc=BucketCapture(['h1-eth1','h1-eth2'],10/11,11)
     bc.start()
-    c.start()
-    time.sleep(5*60)
-    requests.post('http://192.168.1.3:8050/reset',json={"alpha":alpha, "delta":delta})
-    sys.exit()
+    app.run(host='0.0.0.0',port=5000,debug=True)
+    bc.join()
+    c.join()

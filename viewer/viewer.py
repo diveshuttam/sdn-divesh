@@ -12,7 +12,7 @@ from flask import Flask, request, abort
 from error import error
 
 count = 0
-maxtime=5*60
+maxtime = 3*60
 server = Flask(__name__)
 lock1 = Lock()
 lock2 = Lock()
@@ -56,7 +56,7 @@ def update1():
     if not request.json:
         abort(400)
     nicetext=request.json
-    print(nicetext['type'],nicetext['val'])
+    print(nicetext['type'],nicetext['time'],nicetext['val'])
     if(nicetext['type']=='cemon'):
         X1.append((nicetext['time']))
         Y1.append(nicetext['val'])
@@ -91,8 +91,6 @@ def reset():
     X2.append(0)
     Y2 = deque()
     Y2.append(0)
-
-
 
     X3 = deque()
     X3.append(0)
@@ -130,15 +128,14 @@ def reset():
 @server.route("/reset",methods=['POST'])
 def updat1():
     js=request.json
-    print("x1,y1",X1,Y1)
-    print("x2,y2",X2,Y2)
-    print("x3,y3",X3,Y3)
     print(f"reseting {js['alpha'], js['delta']}")
     reset()
-    global count
-    count+=1
-    if(count==2):
-        sys.exit()
+    return 'done',200
+
+@server.route("/reset_full",methods=['POST','GET'])
+def updat2():
+    print("reset_full")
+    reset()
     return 'done',200
 
 

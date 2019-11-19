@@ -9,41 +9,36 @@ import logging
 import struct
 from threading import Thread
 
+from flask import Flask, request
+app = Flask(__name__)
+
 class Server():
     def __init__(self,HOST,PORT):
-        print('binding server')
-        self.s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            self.s.bind((HOST, PORT))
-        except:
-            pass
         self.hooks=[]
-           
+        self.reset_hooks=[]
+        @app.route('/update',methods=['POST'])
+        def update():
+            js = request.json
+            freq=js['frequency']
+            print(f"got frequency {freq}")
+            for hook in self.hooks:
+                hook(freq)
+            return "done", 201
+        
+        @app.route('/reset', methods = ['POST','GET'])
+        def reset():
+            print('reseting')
+            for hook in self.reset_hooks:
+                hook()
+            return "done", 201
+                    
+
+        def fun():
+            app.run(host=HOST,port=PORT,use_reloader=False)
+
+        self.thread = Thread(target=fun)
+
     def start(self):
-        def fun(self):
-            self.s.listen()
-            logging.info('server started')
-
-            while True:
-                logging.info('server accepting new connections')
-                self.conn, self.addr = self.s.accept()
-                logging.info(f'Connected by Mirrored Host {self.addr}')
-                while True:
-                    try:
-                        unpacker = struct.Struct('!Q')
-                        x=self.conn.recv(unpacker.size)
-                        logging.info(x)
-                        pollingFreq = unpacker.unpack(x)[0]
-                        logging.info(f'Polling Freq : {pollingFreq}')
-                        for hook in self.hooks:
-                            Thread(target=hook,args=(pollingFreq,)).start()
-                    except:
-                        try:
-                            self.conn.close()
-                        except:
-                            pass
-
-        self.thread = Thread(target=fun,args=(self,), name = 'frequency server')
         self.thread.start()
 
     def join(self):
@@ -51,6 +46,10 @@ class Server():
 
     def register(self,hook):
         self.hooks.append(hook)
+
+    def register_reset(self,hook):
+        assert(hook!=None)
+        self.reset_hooks.append(hook)
 
 if __name__ == '__main__':
     log_format = "%(asctime)s: %(message)s: %(funcName)s"

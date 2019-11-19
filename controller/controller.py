@@ -32,9 +32,11 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         self.tmax = 5
         self.cemon = CEMon.CEMon(self.tmin,self.tmax)
         self.nqmon = NqMon.NqMon(self.tmin,self.tmax)
-        self.nqmon_server = Server.Server('192.168.1.3',4747)
-        self.nqmon_server.register(self.nqmon.update_interval)
-        self.nqmon_server.start()
+        self.server = Server.Server('192.168.1.3',4747)
+        self.server.register(self.nqmon.update_interval)
+        self.server.register_reset(self.nqmon.reset)
+        self.server.register_reset(self.cemon.reset)
+        self.server.start()
         self.cemon_thread = Thread(target=self._cemon_monitor, name='cemon thread')
         self.nqmon_thread = Thread(target=self._nqmon_monitor, name='nqmon thread')
         self.actual_thread = Thread(target=self._actual_thread, name='actual thread')
@@ -49,7 +51,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 [MAIN_DISPATCHER, DEAD_DISPATCHER])
     def _state_change_handler(self, ev):
         datapath = ev.datapath
-        print('datapath id', datapath.id)
+        # print('datapath id', datapath.id)
         if(datapath.id == self.interesting_switch):
             if ev.state == MAIN_DISPATCHER:
                 if datapath.id not in self.datapaths:
@@ -72,7 +74,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 bytes_,flow_time, time_=temp
                 bytes_diff = bytes_-self.cemon_bytes_
                 time_diff = flow_time-self.cemon_time_
-                print('***timediff***', time_diff)
+                # print('***timediff***', time_diff)
                 self.cemon_speed_ = bytes_diff/time_diff
                 requests.post(URL,json=self.value_fun(bytes_, self.cemon_bytes_, flow_time, self.cemon_time_, 'cemon'))
                 self.logger.debug(f'cemon bytes {self.cemon_bytes_}')
@@ -146,7 +148,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
 
             # poll the interesting switch
             for dp in self.datapaths.values():
-                print(dp)
+                # print(dp)
                 self.waiting+=1
                 self._request_stats(dp)
             
@@ -164,18 +166,18 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
 
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
-        print('in reply')
+        # print('in reply')
         time=datetime.now().timestamp()
         body = ev.msg.body
         datapath = ev.msg.datapath
         ofp_match = datapath.ofproto_parser
-        print(body)
+        # print(body)
         
         flag = False
         with self.flow_dict_lock:
             count = 0
             for stat in body:
-                print('some stat found')
+                # print('some stat found')
                 count+=1
 
                 try:
