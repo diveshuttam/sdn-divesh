@@ -31,5 +31,5 @@ Open 3 terminals
   
 - xterm h1 # 2nd/different one
   - cd collector
-  - # before running the following command, change the experments.py file, it contains parameters to control the experiments to run
+  - `# before running the following command, change the experments.py file, it contains parameters to control the experiments to run`
   - python3 experiments.py
