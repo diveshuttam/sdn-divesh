@@ -77,8 +77,10 @@ def reset_full():
 if __name__ == '__main__':
     for i in range(5):
         reset_full()
-        for delta in np.arange(0.1,1.0,0.1):
-            for alpha in np.arange(0.05,1.0,0.1):
+        for delta in [0.8]:
+            for alpha in [0.85]:
+        #for delta in np.arange(0.1,1.0,0.1):
+            #for alpha in np.arange(0.05,1.0,0.1):
                 ITGRecv()
                 time.sleep(1)
                 ITGSend(seed=seeds[i])
