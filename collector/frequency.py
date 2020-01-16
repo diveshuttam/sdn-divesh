@@ -5,6 +5,8 @@ This module takes care of calculating frequency of the captured traffic
 import logging
 from threading import Thread
 import sys
+import numpy as np
+
 """
 Class provides hooks to calculate frequency of current traffic
 """
@@ -30,7 +32,7 @@ class FrequencyCalculator():
     This function calculates the frequency when the buckets arrive
     Register this hook on the bucket complete event in capture
     """
-    def calculate_frequency(self, buckets):
+    def calculate_frequency2(self, buckets):
         print("buckets",buckets,"delta",self.curr_delta)
         sys.stdout.flush()
         n=len(buckets)
@@ -63,7 +65,29 @@ class FrequencyCalculator():
                 raise
         return 2*count
 
+    def calculate_frequency(self,buckets):
+        x = np.array([ i._bytes for i in buckets])
+        frate = 2
+        data = x - np.average(x)
+        w = np.fft.fft(data)
+        print("w",w)
+        freqs = np.fft.fftfreq(len(w))
+        print("freqs",freqs)
+        print(freqs.min(), freqs.max())
+        # (-0.5, 0.499975)
+        # Find the peak in the coefficients
+        print("np.abs(w)", np.abs(w))
+        idx = np.argmax(np.abs(w))
+        print("idx", idx)
+        freq = freqs[idx]
+        print("freq",freq)
+        freq_in_hertz = abs(freq * frate)
+        print("freq_in_hertz", freq_in_hertz)
+        print("nyquist freq_in_hertz", 2*freq_in_hertz)
 
+        print("time period", 1/freq_in_hertz)
+        print("nyquist time period", 1/(2*freq_in_hertz))
+        return 10*2*freq_in_hertz
     """
     This function registers a hook to after the frequency is calculated
     """
