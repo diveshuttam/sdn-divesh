@@ -36,7 +36,7 @@ Open 3 terminals
   - python3 experiments.py
 
 
--To get the data of our intrest from output_voip file
+- To get the data of our intrest from output_voip file
   - cat output_voip_counter_1 | grep '^nqmon\|reset' > nqmon_voip
   - cat output_voip_counter_1 | grep '^cemon\|reset' > cemon_voip
   - cat output_voip_counter_1 | grep '^actual\|reset' > actual_voip

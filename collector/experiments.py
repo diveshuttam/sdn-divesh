@@ -5,9 +5,9 @@ import time
 
 command_port = 5000
 seeds = [190/1000, 464/1000, 227/1000, 88/1000, 214/1000]
-type_arr = ['voip','mpg','pareto','poission']
+type_arr = ['voip','mpg','pareto','poisson']
 
-type_='pareto'
+type_='poisson'
 mins = 5 
 timems = 60*mins*1000
 
@@ -23,10 +23,10 @@ def ITGRecv():
 
 
 
-def ITGSend(seed):
+def ITGSend(seed, num):
     SourceHost = 'http://10.0.0.2:5000'
     command_voip = f'ITGSend -s {seed} -a 10.0.0.6 -t {timems} VoIP -x G.711.2 -h RTP -VAD'
-    command_mpg = f'ITGSend -s {seed} -a 10.0.0.6 -t {timems} -e 2000 -E 122'
+    command_mpg = f'cd mpg/{num} && ITGSend {num}.ditg && cd ../..'
     command_pareto = f'ITGSend -s {seed} -a 10.0.0.6 -t {timems} -v 1.16 1'
     command_poisson = f'ITGSend -s {seed} -a 10.0.0.6 -t {timems} -e 2000 -E 122'
     cmd_d = {
@@ -83,7 +83,7 @@ if __name__ == '__main__':
             #for alpha in np.arange(0.05,1.0,0.1):
                 ITGRecv()
                 time.sleep(1)
-                ITGSend(seed=seeds[i])
+                ITGSend(seed=seeds[i], num=i)
                 time.sleep(1)
                 data_server_reset(alpha, delta, seeds[i])
                 time.sleep(1)
