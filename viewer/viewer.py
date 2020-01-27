@@ -12,7 +12,7 @@ from flask import Flask, request, abort
 from error import error
 
 count = 0
-maxtime = 3*60
+maxtime = 10
 server = Flask(__name__)
 lock1 = Lock()
 lock2 = Lock()

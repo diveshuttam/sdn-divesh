@@ -7,7 +7,7 @@ command_port = 5000
 seeds = [190/1000, 464/1000, 227/1000, 88/1000, 214/1000]
 type_arr = ['voip','mpg','pareto','poission']
 
-type_='voip'
+type_='pareto'
 mins = 5 
 timems = 60*mins*1000
 

@@ -16,7 +16,7 @@ class FrequencyCalculator():
     @param alpha is the weight given to past
     @param delta is the threashold which determines sensitivity
     """
-    def __init__(self,delta=0.3,alpha=0.05,minf=1,maxf=20):
+    def __init__(self,delta=0.3,alpha=0.05,minf=1,maxf=200):
         self.current_frequency=0
         self.previous_frequency=0
         self.curr_delta = delta
@@ -67,7 +67,7 @@ class FrequencyCalculator():
 
     def calculate_frequency(self,buckets):
         x = np.array([ i._bytes for i in buckets])
-        frate = 2
+        frate = 20
         data = x - np.average(x)
         w = np.fft.fft(data)
         print("w",w)

@@ -15,7 +15,7 @@ def reset():
     js = request.json
     delta = js['delta']
     alpha = js['alpha']
-    fc=FrequencyCalculator(delta=delta,alpha=alpha,minf=2,maxf=20)
+    fc=FrequencyCalculator(delta=delta,alpha=alpha,minf=2,maxf=200)
     bc.register(fc.calculate_frequency)
     fc.register(c.frequency_send)
     print(f"{alpha}, {delta}")
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     global c
     global bc
     c=Client('192.168.1.3',4747)
-    bc=BucketCapture(['h1-eth1','h1-eth2'],10/11,11)
+    bc=BucketCapture(['h1-eth1','h1-eth2'],0.05,200)
     bc.start()
     app.run(host='0.0.0.0',port=5000,debug=True)
     bc.join()
