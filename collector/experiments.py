@@ -26,9 +26,10 @@ def ITGRecv():
 def ITGSend(seed, num):
     SourceHost = 'http://10.0.0.2:5000'
     command_voip = f'ITGSend -s {seed} -a 10.0.0.6 -t {timems} VoIP -x G.711.2 -h RTP -VAD'
-    command_mpg = f'cd mpg/{num} && ITGSend {num}.ditg && cd ../..'
+    command_mpg = f'cd mpg/{num+1} && ITGSend {num+1}.ditg && cd ../..'
     command_pareto = f'ITGSend -s {seed} -a 10.0.0.6 -t {timems} -v 1.16 1'
-    command_poisson = f'ITGSend -s {seed} -a 10.0.0.6 -t {timems} -e 2000 -E 122'
+    command_poisson = f'ITGSend -s {seed} -a 10.0.0.6 -t {timems} -e 20000 -E 15000'
+    # command_poisson = f'ITGSend -s {seed} -a 10.0.0.6 -t {timems} -T TCP'
     cmd_d = {
         'voip': command_voip,
         'mpg': command_mpg,

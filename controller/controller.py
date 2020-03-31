@@ -187,6 +187,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                         self.flow_dict[flow_id]=deque([], maxlen=30)
                     self.flow_dict[flow_id].append((stat.byte_count,flow_time))
                     self.bytes_, self.flow_time, self.time_ = stat.byte_count, flow_time, time
+                    print(f'stat:**{stat}**')
                     # print(f'set {self.bytes_}, {self.time_}')
                 except BaseException as e:
                     raise

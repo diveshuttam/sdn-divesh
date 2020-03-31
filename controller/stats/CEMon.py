@@ -37,6 +37,7 @@ class CEMon():
         self.window.append(bytes_)
         self.sum+=bytes_
         self.squaresum+=(bytes_*bytes_)
+        self.ws = min(10,self.ws)
         while len(self.window)>self.ws:
             b1=self.window[0]
             self.sum-=b1

@@ -22,14 +22,25 @@ class MyTopo( Topo ):
         s3 = self.addSwitch( 's3', protocols='OpenFlow13' )
 
         # Add links
-        self.addLink(h1, s1)
-        self.addLink(h2, s1)
-        self.addLink(h3, s2)
-        self.addLink(h4, s2)
-        self.addLink(h5, s3)
-        self.addLink(h6, s3)
-        self.addLink(s1, s2)
-        self.addLink(s2, s3)
+        loss = None
+        delay = '1ms'
+        bw = 0.01
+        self.addLink(h1, s1, bw=bw, delay=delay, loss=loss,
+                          max_queue_size=1000, )
+        self.addLink(h2, s1, bw=bw, delay=delay, loss=loss,
+                          max_queue_size=1000, )
+        self.addLink(h3, s2, bw=bw, delay=delay, loss=loss,
+                          max_queue_size=1000, )
+        self.addLink(h4, s2, bw=bw, delay=delay, loss=loss,
+                          max_queue_size=1000, )
+        self.addLink(h5, s3, bw=bw, delay=delay, loss=loss,
+                          max_queue_size=1000, )
+        self.addLink(h6, s3, bw=bw, delay=delay, loss=loss,
+                          max_queue_size=1000, )
+        self.addLink(s1, s2, bw=bw, delay=delay, loss=loss,
+                          max_queue_size=1000, )
+        self.addLink(s2, s3, bw=bw, delay=delay, loss=loss,
+                          max_queue_size=1000, )
 
         #mirror link
         self.addLink(h1, s1)
