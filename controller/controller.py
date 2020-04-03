@@ -45,7 +45,8 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         self.actual_thread.start()
     
     def value_fun(self, current_bytes, previous_bytes, current_time, previous_time, type_):
-        return {'time':(current_time+previous_time)/2,'val':(current_bytes-previous_bytes)/(current_time-previous_time), 'type':type_}
+        # return {'time':(current_time+previous_time)/2,'val':(current_bytes-previous_bytes)/(current_time-previous_time), 'type':type_}
+        return {'time':current_time,'val':current_bytes, 'type':type_}
         
     @set_ev_cls(ofp_event.EventOFPStateChange,
                 [MAIN_DISPATCHER, DEAD_DISPATCHER])

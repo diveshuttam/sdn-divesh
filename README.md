@@ -9,6 +9,7 @@ Open 3 terminals
     - h1 ifconfig h1-eth3 192.168.1.2 netmask 255.255.255.0
     - c0 ifconfig c0-eth0 192.168.1.3 netmask 255.255.255.0
     - xterm h1 h1 h2 h6 # this will open 4 xterm terminals we will use these later
+  - sudo ovs-vsctl -- set Bridge s1 mirrors=@m -- --id=@s1-eth1 get Port s1-eth1 -- --id=@s1-eth2 get Port s1-eth2 -- --id=@s1-eth3 get Port s1-eth3 -- --id=@s1-eth4 get Port s1-eth4 -- --id=@m     create Mirror name=mymirror select-dst-port=@s1-eth1,@s1-eth2,@s1-eth3 select-src-port=@s1-eth1,@s1-eth2,@s1-eth3 output-port=@s1-eth4
  
 - terminal 2:
   - cd viewer
