@@ -33,7 +33,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         self.cemon = CEMon.CEMon(self.tmin,self.tmax)
         self.nqmon = NqMon.NqMon(self.tmin,self.tmax)
         self.server = Server.Server('192.168.1.3',4747)
-        self.server.register(self.nqmon.update_interval)
+        # self.server.register(self.nqmon.update_interval)
         self.server.register_reset(self.nqmon.reset)
         self.server.register_reset(self.cemon.reset)
         self.server.start()
@@ -105,6 +105,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
                 self.nqmon_speed_ = bytes_diff/time_diff
                 requests.post(URL,json= self.value_fun(bytes_, self.nqmon_bytes_, flow_time, self.nqmon_time_, 'nqmon') )
                 self.logger.debug(f'nqmon bytes {self.nqmon_bytes_}')
+                self.nqmon.add_new_window(bytes_, flow_time)
             except (AttributeError,requests.ConnectionError) as e:
                 print(e)
                 pass

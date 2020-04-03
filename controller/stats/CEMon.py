@@ -9,7 +9,7 @@ class CEMon():
         self.sum=0
         self.squaresum=0
         self.lastreading=0
-        self.time=tmin
+        self.time=1.0
         self.tmin=tmin
         self.tmax=tmax
         self.mean=0
