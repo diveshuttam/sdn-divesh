@@ -7,38 +7,36 @@ except ImportError:
 
 from yaml import load, dump
 
-file_names = ['poission0.2', 'voip0.1', 'voip0.2']
+file_names = ['br2', 'matrix2']
 
 import sys
-ip='10.0.0.1'
+ip='10.0.0.2'
 initgap=10.0
 for fname in file_names:
     print(f'generating {fname}')
     sys.stdout.flush()
-    traffic=open(f'../pcap/{fname}.yaml')
+    traffic=open(f'../pcap1/{fname}.yaml')
     data=traffic.read()
     arr = load(data, Loader=Loader)
     try:
-        os.mkdir(f'../pcap/{fname}/')
+        os.mkdir(f'../pcap1/{fname}/')
     except FileExistsError:
         pass
-    ps=open(f'../pcap/{fname}/{fname}.ps','w')
-    idts=open(f'../pcap/{fname}/{fname}.idts','w')
-    ditg=open(f'../pcap/{fname}/{fname}.ditg','w')
+    ps=open(f'../pcap1/{fname}/{fname}.ps','w')
+    idts=open(f'../pcap1/{fname}/{fname}.idts','w')
+    ditg=open(f'../pcap1/{fname}/{fname}.ditg','w')
     
     px = arr[0][0]
     py = 0
     for x,y in arr:
         if(px!=x):
-            idts.write(f'{(x.timestamp()-px.timestamp()+initgap):.10f}')
-        else:
-            idts.write(f'{initgap:.10f}')
-        idts.write('\n')
-        
+            idts.write(f'{(x.timestamp()-px.timestamp())*1000:.10f}')
+            idts.write('\n')
+        px=x
         ps.write(f'{y-py}')
         ps.write('\n')
         py=y
-    ditg.write(f'-z {len(arr)} -a {ip}  -Fs {fname}.ps  -Ft {fname}.idts -T TCP')
+    ditg.write(f'-z {len(arr)} -a {ip}  -Fs {fname}.ps  -Ft {fname}.idts -T UDP')
     ditg.write('\n')
     
     traffic.close()
