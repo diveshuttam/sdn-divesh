@@ -25,7 +25,7 @@ class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
         self.bytes_lock = Lock()
         self.flow_dict={}
         self.flow_dict_lock=Lock()
-        self.interesting_flow = ('00:00:00:00:00:02', '00:00:00:00:00:06')
+        self.interesting_flow = ('00:00:00:00:00:06', '00:00:00:00:00:02')
         self.interesting_switch = 1
         self.actual_polling=0.5 # freqency for actual polling
         self.tmin = 0.5
