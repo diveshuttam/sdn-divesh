@@ -26,12 +26,17 @@ for fname in file_names:
     idts=open(f'../pcap1/{fname}/{fname}.idts','w')
     ditg=open(f'../pcap1/{fname}/{fname}.ditg','w')
     
-    px = arr[0][0]
+    px = 0
     py = 0
     for x,y in arr:
-        if(px!=x):
-            idts.write(f'{(x.timestamp()-px.timestamp())*1000:.10f}')
-            idts.write('\n')
+        if(px!=0):
+            temp = (x.timestamp()-px.timestamp())*1000
+            if(temp<0.01):
+                temp=0.01
+            idts.write(f'{temp:.10f}')
+        else:
+            idts.write(f'{1000.0:.10f}')
+        idts.write('\n')
         px=x
         ps.write(f'{y-py}')
         ps.write('\n')
