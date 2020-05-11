@@ -7,7 +7,7 @@ except ImportError:
 
 from yaml import load, dump
 
-file_names = ['br2', 'matrix2']
+file_names = ['poission0.1', 'poission0.2', 'pareto0.1', 'pareto0.2', 'poission_slow0.2', 'voip0.1', 'voip0.2']
 
 import sys
 ip='10.0.0.2'
