@@ -1,3 +1,5 @@
+# Mininet topology and configuraitons for my [thesis project](https://github.com/diveshuttam/thesis)
+
 # How to run
 
 Open 3 terminals
