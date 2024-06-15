@@ -3,7 +3,7 @@
 Open 3 terminals
 
 - terminal 1: 
-  - sudo mn --controller remote --mac bigtopo.py --topo bigtopo
+  - sudo mn --controller=remote --mac --topo=bigtopo --custom=bigtopo.py
   - (Inside mn shell)
     - py net.addLink(c0, h1)
     - h1 ifconfig h1-eth3 192.168.1.2 netmask 255.255.255.0
@@ -11,13 +11,14 @@ Open 3 terminals
     - xterm h1 h1 h2 h6 # this will open 4 xterm terminals we will use these later
  
 - terminal 2:
+  - sudo ovs-vsctl -- set Bridge s1 mirrors=@m -- --id=@s1-eth1 get Port s1-eth1 -- --id=@s1-eth2 get Port s1-eth2 -- --id=@s1-eth3 get Port s1-eth3 -- --id=@s1-eth4 get Port s1-eth4 -- --id=@m     create Mirror name=mymirror select-dst-port=@s1-eth1,@s1-eth2,@s1-eth3 select-src-port=@s1-eth1,@s1-eth2,@s1-eth3 output-port=@s1-eth4
   - cd viewer
-  - python3 viewer.py  
+  - python3 viewer.py > output_voip  
   - open localhost:8050 in chrome
  
 - terminal 3:
   - cd controller
-  - python3 controller.py
+  - ryu-manager controller.py
   
 - xterm h2
   - python3 command_server.py
@@ -33,3 +34,9 @@ Open 3 terminals
   - cd collector
   - `# before running the following command, change the experments.py file, it contains parameters to control the experiments to run`
   - python3 experiments.py
+
+
+-To get the data of our intrest from output_voip file
+  - cat output_voip_counter_1 | grep '^nqmon\|reset' > nqmon_voip
+  - cat output_voip_counter_1 | grep '^cemon\|reset' > cemon_voip
+  - cat output_voip_counter_1 | grep '^actual\|reset' > actual_voip

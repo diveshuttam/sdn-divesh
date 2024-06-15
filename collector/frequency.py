@@ -47,6 +47,8 @@ class FrequencyCalculator():
             sum_change += change
             if change>=self.curr_delta:
                 count+=1
+            #if change>=2*self.curr_delta:
+                #count+=1 # increase by one more i.e. by 2
         self.bucket_change_avg = sum_change/(n-1)
         self.prev_delta = self.curr_delta
         self.curr_delta = self.prev_delta*(1-self.alpha) + self.bucket_change_avg*self.alpha
